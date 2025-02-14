@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 body {
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: sans-serif;
 }
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 240 10% 3.9%;
+    --background: 0 0% 0%;
+    --foreground: 47 100% 85%;
     --card: 0 0% 100%;
     --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
@@ -33,6 +33,10 @@ body {
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
     --radius: 0.5rem;
+    --background: 0 0% 0%;
+    --foreground: 47 100% 85%;
+    --primary: 47 100% 55%;
+    --primary-foreground: 0 0% 0%;
   }
   .dark {
     --background: 240 10% 3.9%;
@@ -67,6 +71,6 @@ body {
     @apply border-border;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground font-sans;
   }
 }
