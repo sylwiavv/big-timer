@@ -8,7 +8,6 @@ interface ITimerUnitProps {
 }
 
 export default function TimerUnit({ time, unit }: ITimerUnitProps) {
-  console.log('TimerUnit', time, unit);
   return (
     <div className="flex font-extrabold text-[16rem] justify-center items-center">
       <div className="flex flex-col items-center justify-center">

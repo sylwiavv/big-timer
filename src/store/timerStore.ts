@@ -26,10 +26,45 @@ export const useTimerStore = create<ITimerState>()(
       minutes: 0,
       seconds: 0,
       running: ERunning.IDLE,
-
-      setTime: (unit, value) =>
+      setTime: (unit: ETimerUnits, value: number) =>
         set((state) => {
-          state[unit] = Math.max(0, state[unit] + value);
+          let { hours, minutes, seconds } = state;
+
+          if (unit === ETimerUnits.SECONDS) {
+            seconds += value;
+            if (seconds >= 60) {
+              minutes += Math.floor(seconds / 60);
+              seconds %= 60;
+            } else if (seconds < 0) {
+              if (minutes > 0) {
+                minutes -= 1;
+                seconds += 60;
+              } else {
+                seconds = 0;
+              }
+            }
+          }
+
+          if (unit === ETimerUnits.MINUTES) {
+            minutes += value;
+            if (minutes >= 60) {
+              hours += Math.floor(minutes / 60);
+              minutes %= 60;
+            } else if (minutes < 0) {
+              if (hours > 0) {
+                hours -= 1;
+                minutes += 60;
+              } else {
+                minutes = 0;
+              }
+            }
+          }
+
+          if (unit === ETimerUnits.HOURS) {
+            hours = Math.max(0, hours + value);
+          }
+
+          return { hours, minutes, seconds };
         }),
 
       toggleRunning: (running) =>
