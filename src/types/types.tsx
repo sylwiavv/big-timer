@@ -1,6 +1,6 @@
 'use client';
 
-export enum ETIMERUNITS {
+export enum ETimerUnits {
   SECONDS = 'Seconds',
   MINUTES = 'Minutes',
   HOURS = 'Hours',

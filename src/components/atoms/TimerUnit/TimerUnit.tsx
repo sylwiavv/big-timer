@@ -1,13 +1,14 @@
 'use client';
 
-import { ETIMERUNITS } from '../../../types/types';
+import { ETimerUnits } from '../../../types/types';
 
 interface ITimerUnitProps {
   time: number;
-  unit: ETIMERUNITS;
+  unit: ETimerUnits;
 }
 
 export default function TimerUnit({ time, unit }: ITimerUnitProps) {
+  console.log('TimerUnit', time, unit);
   return (
     <div className="flex font-extrabold text-[16rem] justify-center items-center">
       <div className="flex flex-col items-center justify-center">
@@ -15,7 +16,7 @@ export default function TimerUnit({ time, unit }: ITimerUnitProps) {
         <span className="text-lg font-light">{unit}</span>
       </div>
 
-      {unit !== ETIMERUNITS.SECONDS && <span>:</span>}
+      {unit !== ETimerUnits.SECONDS && <span>:</span>}
     </div>
   );
 }
