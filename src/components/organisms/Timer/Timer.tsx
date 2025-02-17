@@ -27,8 +27,6 @@ const Timer = () => {
     reset,
   });
 
-  console.log(seconds, 'SECONDS');
-
   return (
     <>
       {!emptyTimer && (
@@ -68,7 +66,7 @@ const Timer = () => {
         </ButtonsLayout>
       )}
 
-      <div className="flex items-center justify-center">
+      <div className="flex bg-[#5080aa]">
         {/* {hours > 0 && <TimerUnit time={hours} unit={ETimerUnits.HOURS} />} */}
         {<TimerUnit time={convertedHours} unit={ETimerUnits.HOURS} />}
         <TimerUnit time={convertedMinutes} unit={ETimerUnits.MINUTES} />
