@@ -15,7 +15,7 @@ const Timer = () => {
   const emptyTimer = seconds === 0 && minutes === 0 && hours === 0;
 
   return (
-    <div className="flex gap-4 items-center justify-center">
+    <>
       {!emptyTimer && (
         <ButtonsLayout>
           <Button
@@ -40,7 +40,8 @@ const Timer = () => {
       )}
 
       <div className="flex items-center justify-center">
-        <TimerUnit time={hours} unit={ETimerUnits.HOURS} />
+        {/* {hours > 0 && <TimerUnit time={hours} unit={ETimerUnits.HOURS} />} */}
+        {<TimerUnit time={hours} unit={ETimerUnits.HOURS} />}
         <TimerUnit time={minutes} unit={ETimerUnits.MINUTES} />
         <TimerUnit time={seconds} unit={ETimerUnits.SECONDS} />
       </div>
@@ -48,14 +49,14 @@ const Timer = () => {
       <ButtonsLayout>
         <CircleButtonWithIcon
           icon={<Plus />}
-          onClick={() => setTime(ETimerUnits.SECONDS, 5)}
+          onClick={() => setTime(ETimerUnits.SECONDS)}
         />
         <CircleButtonWithIcon
           icon={<Minus />}
-          onClick={() => setTime(ETimerUnits.SECONDS, -5)}
+          onClick={() => setTime(ETimerUnits.SECONDS)}
         />
       </ButtonsLayout>
-    </div>
+    </>
   );
 };
 
