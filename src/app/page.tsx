@@ -1,138 +1,56 @@
 'use client';
 
-import { Minus, Plus } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
+import { BigTimer } from '../components/templates/BigTimer';
+import { convertSeconds, convertToSeconds } from '../helpers/convert-seconds';
+import { useTimerStore } from '../store/TimerStore';
 
-import { useEffect, useRef, useState } from 'react';
-import CircleButtonWithIcon from '../components/atoms/CircleButton/CircleButton';
-import { ButtonsLayout } from '../components/molecules/ButtonsLayout/ButtonsLayout';
-import { EditTimer } from '../components/organisms/EditTimer/EditTimer';
-import Timer from '../components/organisms/Timer/Timer';
-import { Button } from '../components/ui/button';
-import useCountdown from '../hooks/useCountDown';
-import { ERunning, useTimerStore } from '../store/TimerStore';
-
-export default function Home() {
-  const {
-    toggleRunning,
-    setTime,
-    running,
-    seconds,
-    restartTime,
-    setSeconds,
-    setRestartTime,
-  } = useTimerStore();
-
-  const { start, pause, restart } = useCountdown({
-    seconds,
-    running: running === 'running',
-    setTime,
-    toggleRunning: (state) =>
-      toggleRunning(state ? ERunning.RUNNING : ERunning.PAUSED),
-  });
-
-  const [isEditingMode, setIsEditingMode] = useState(false);
-  const editTimerRef = useRef<HTMLDivElement>(null);
-
-  const emptyTimer = seconds === 0;
+const Home = () => {
+  const searchParams = useSearchParams();
+  const { seconds, setSeconds } = useTimerStore();
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        editTimerRef.current &&
-        !editTimerRef.current.contains(event.target as Node)
-      ) {
-        setIsEditingMode(false);
-      }
-    };
+    const params = new URLSearchParams(searchParams.toString());
 
-    if (isEditingMode) {
-      document.addEventListener('mousedown', handleClickOutside);
-    } else {
-      document.removeEventListener('mousedown', handleClickOutside);
+    const { convertedHours, convertedMinutes, convertedSeconds } =
+      convertSeconds(seconds);
+
+    if (convertedHours > 0) {
+      params.set('hour', convertedHours.toString());
+      window.history.pushState(null, '', `?${params.toString()}`);
     }
 
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [isEditingMode]);
+    if (convertedMinutes > 0) {
+      params.set('minutes', convertedMinutes.toString());
+      window.history.pushState(null, '', `?${params.toString()}`);
+    }
+
+    if (convertedSeconds > 0) {
+      params.set('seconds', convertedSeconds.toString());
+      window.history.pushState(null, '', `?${params.toString()}`);
+    }
+  }, [seconds]);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
+    const hours = Number(params.get('hour'));
+    const minutes = Number(params.get('minutes'));
+    const seconds = Number(params.get('seconds'));
+
+    if (params.size === 0) return;
+
+    const secondsToSet = convertToSeconds(hours, minutes, seconds);
+
+    setSeconds(secondsToSet);
+  }, []);
 
   return (
     <main className="flex items-center justify-center h-screen">
-      {/* {!emptyTimer && ( */}
-
-      {/* )} */}
-      <div
-        className="grid gap-4"
-        style={{
-          gridTemplateColumns:
-            'minmax(50px, 200px) minmax(310px, 1200px) minmax(50px, 200px)',
-        }}
-      >
-        <ButtonsLayout>
-          <Button
-            className="font-semibold"
-            onClick={() => {
-              start();
-              toggleRunning(ERunning.RUNNING);
-            }}
-          >
-            Start
-          </Button>
-          <Button
-            className="font-semibold"
-            onClick={() => {
-              pause();
-              toggleRunning(ERunning.PAUSED);
-            }}
-          >
-            Pause
-          </Button>
-
-          {(running === ERunning.RUNNING || running === ERunning.PAUSED) && (
-            <Button
-              className="font-semibold"
-              onClick={() => {
-                // setTime(+secondsFromSearchParams);
-                restart();
-                toggleRunning(ERunning.IDLE);
-              }}
-            >
-              Reset
-            </Button>
-          )}
-        </ButtonsLayout>
-        <div
-          className="flex flex-col items-center"
-          onClick={() => setIsEditingMode(true)}
-        >
-          {isEditingMode ? (
-            <div ref={editTimerRef}>
-              <EditTimer />
-            </div>
-          ) : (
-            <Timer />
-          )}
-        </div>
-
-        <ButtonsLayout>
-          <CircleButtonWithIcon
-            icon={<Plus />}
-            onClick={() => {
-              setRestartTime(seconds);
-              // addParamsToUrl();
-              setTime(5);
-            }}
-          />
-          <CircleButtonWithIcon
-            icon={<Minus />}
-            onClick={() => {
-              setRestartTime(seconds);
-              // addParamsToUrl();
-              setTime(-5);
-            }}
-          />
-        </ButtonsLayout>
-      </div>
+      <BigTimer />
     </main>
   );
-}
+};
+
+export default Home;

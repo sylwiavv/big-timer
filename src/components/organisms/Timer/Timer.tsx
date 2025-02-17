@@ -11,6 +11,8 @@ const Timer = () => {
   const { convertedSeconds, convertedMinutes, convertedHours } =
     convertSeconds(seconds);
 
+  console.log(seconds, 'seconds TIMER');
+
   return (
     <div className="flex bg-[#5080aa]">
       {/* {hours > 0 && <TimerUnit time={hours} unit={ETimerUnits.HOURS} />} */}
