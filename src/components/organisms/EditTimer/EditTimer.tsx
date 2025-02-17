@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useTimerStore } from '../../../store/timerStore';
+import { useTimerStore } from '../../../store/TimerStore';
 import { ETimerUnits } from '../../../types/types';
 import { Button } from '../../ui/button';
 

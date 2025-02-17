@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { ETimerUnits } from '../types/types';
 
 export enum ERunning {
   IDLE = 'idle',
@@ -10,11 +9,11 @@ export enum ERunning {
 }
 
 interface ITimerState {
-  hours: number;
-  minutes: number;
+  // hours: number;
+  // minutes: number;
   seconds: number;
   running: ERunning;
-  setTime: (unit: ETimerUnits) => void;
+  setTime: (value: number) => void;
   toggleRunning: (running: ERunning) => void;
   reset: () => void;
 }
@@ -26,21 +25,11 @@ export const useTimerStore = create<ITimerState>()(
       minutes: 0,
       seconds: 0,
       running: ERunning.IDLE,
-      setTime: (unit: ETimerUnits) =>
+      setTime: (value) =>
         set((state) => {
-          let { hours, minutes, seconds } = state;
-
-          if (unit === ETimerUnits.SECONDS) {
-            seconds += 5;
-          }
-
-          if (unit === ETimerUnits.MINUTES) {
-          }
-
-          if (unit === ETimerUnits.HOURS) {
-          }
-
-          return { hours, minutes, seconds };
+          let { seconds } = state;
+          seconds += value;
+          return { seconds };
         }),
 
       toggleRunning: (running) =>
@@ -50,8 +39,8 @@ export const useTimerStore = create<ITimerState>()(
 
       reset: () =>
         set((state) => {
-          state.hours = 0;
-          state.minutes = 59;
+          // state.hours = 0;
+          // state.minutes = 0;
           state.seconds = 0;
           state.running = ERunning.IDLE;
         }),

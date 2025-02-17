@@ -15,7 +15,9 @@ export default function TimerUnit({ time, unit }: ITimerUnitProps) {
     <div className="flex font-extrabold text-[16rem] justify-center items-center">
       <div className="flex flex-col items-center justify-center">
         <p className="leading-[.76]">
-          {unit === ETimerUnits.SECONDS ? formatTime(time) : time}
+          {unit === ETimerUnits.SECONDS || unit === ETimerUnits.MINUTES
+            ? formatTime(time)
+            : time}
         </p>{' '}
         <span className="text-lg font-light">{unit}</span>
       </div>
