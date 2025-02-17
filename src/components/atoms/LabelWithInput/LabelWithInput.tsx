@@ -15,7 +15,7 @@ const LabelWithInput = ({ label, value, onChange }: ILabelWithInputProps) => {
         <input
           type="text"
           pattern="[0-9]*"
-          className="bg-transparent  font-bold appearance-textfieldw-[1.135em] p-0 text-right text-timerXl w-[1.5em] bg-[aliceblue]"
+          className="bg-transparent  font-bold appearance-textfieldw-[1.135em] p-0 text-right text-timerXl w-full bg-[aliceblue]"
           //   value={
           //     label === ETimerUnits.SECONDS || label === ETimerUnits.MINUTES
           //       ? formatTime(+value)

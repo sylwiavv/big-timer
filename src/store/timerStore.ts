@@ -11,11 +11,14 @@ export enum ERunning {
 interface ITimerState {
   // hours: number;
   // minutes: number;
+  restartTime: number;
   seconds: number;
   running: ERunning;
   setTime: (value: number) => void;
+  setSeconds: (value: number) => void;
   toggleRunning: (running: ERunning) => void;
-  reset: () => void;
+
+  setRestartTime: (time: number) => void;
 }
 
 export const useTimerStore = create<ITimerState>()(
@@ -24,12 +27,20 @@ export const useTimerStore = create<ITimerState>()(
       hours: 0,
       minutes: 0,
       seconds: 0,
+      restartTime: 0,
+
       running: ERunning.IDLE,
       setTime: (value) =>
         set((state) => {
           let { seconds } = state;
+
           seconds += value;
           return { seconds };
+        }),
+
+      setSeconds: (value) =>
+        set((state) => {
+          state.seconds = value;
         }),
 
       toggleRunning: (running) =>
@@ -37,12 +48,12 @@ export const useTimerStore = create<ITimerState>()(
           state.running = running;
         }),
 
-      reset: () =>
+      setRestartTime: (time) =>
         set((state) => {
+          state.restartTime = time;
           // state.hours = 0;
           // state.minutes = 0;
-          state.seconds = 0;
-          state.running = ERunning.IDLE;
+          // state.running = ERunning.IDLE;
         }),
     })),
     {

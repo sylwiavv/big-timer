@@ -5,7 +5,6 @@ interface CountdownOptions {
   running: boolean;
   setTime: (value: number) => void;
   toggleRunning: (state: boolean) => void;
-  reset: () => void;
 }
 
 const useCountdown = ({
@@ -13,7 +12,6 @@ const useCountdown = ({
   running,
   setTime,
   toggleRunning,
-  reset,
 }: CountdownOptions) => {
   useEffect(() => {
     if (!running || seconds <= 0) return;
@@ -28,7 +26,6 @@ const useCountdown = ({
   const start = () => toggleRunning(true);
   const pause = () => toggleRunning(false);
   const restart = () => {
-    reset();
     toggleRunning(true);
   };
 

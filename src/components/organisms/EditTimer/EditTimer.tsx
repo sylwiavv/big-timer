@@ -1,4 +1,6 @@
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
+import { convertToSeconds } from '../../../helpers/convert-seconds';
 import { useTimerStore } from '../../../store/TimerStore';
 import { ETimerUnits } from '../../../types/types';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
@@ -10,29 +12,61 @@ const InputsViarants = [
 ];
 
 export const EditTimer = () => {
-  const { seconds, running, setTime, toggleRunning, reset } = useTimerStore();
+  const {
+    seconds,
+    running,
+    setTime,
+    toggleRunning,
+    setSeconds,
+    setRestartTime,
+    restartTime,
+  } = useTimerStore();
 
-  const [editSeconds, setEditSeconds] = useState(seconds);
+  const [editTimerValues, setEditTimerValues] = useState({
+    [ETimerUnits.HOURS]: 0,
+    [ETimerUnits.MINUTES]: 0,
+    [ETimerUnits.SECONDS]: 0,
+  });
+
+  const searchParams = useSearchParams();
+  const pathname = usePathname();
+  const { replace } = useRouter();
+
+  const handleEdit = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    label: ETimerUnits
+  ) => {
+    const value = +e.target.value;
+
+    setEditTimerValues((prevValues) => {
+      const newValues = { ...prevValues, [label]: value };
+
+      const seconds = convertToSeconds(
+        newValues[ETimerUnits.HOURS],
+        newValues[ETimerUnits.MINUTES],
+        newValues[ETimerUnits.SECONDS]
+      );
+
+      setRestartTime(seconds);
+
+      return newValues;
+    });
+  };
 
   return (
-    <div className="p-4 bg-white rounded-lg shadow-lg text-[#392d00]">
+    <div className=" bg-white rounded-lg shadow-lg text-[#392d00]">
       <form>
         <fieldset className="flex gap-4">
-          {InputsViarants.map(({ label, value }) => (
+          {InputsViarants.map(({ label }) => (
             <LabelWithInput
               key={label}
               label={label}
-              value={value}
-              onChange={(e) => console.log(value, e.target.value)}
+              value={editTimerValues[label]}
+              onChange={(e) => handleEdit(e, label)}
             />
           ))}
         </fieldset>
       </form>
-      <div className="flex gap-4 text-4xl font-bold"></div>
-      <div className="flex gap-4">
-        {/* <Button onClick={toggleRunning}>{running ? 'Pause' : 'Start'}</Button> */}
-        {/* {running && <Button onClick={reset}>Reset</Button>} */}
-      </div>
     </div>
   );
 };
