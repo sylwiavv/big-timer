@@ -4,11 +4,8 @@ import { ETimerUnits } from '../../../types/types';
 import { Button } from '../../ui/button';
 
 export const EditTimer = () => {
-  const { hours, minutes, seconds, running, setTime, toggleRunning, reset } =
-    useTimerStore();
+  const { seconds, running, setTime, toggleRunning, reset } = useTimerStore();
 
-  const [editHours, setEditHours] = useState(hours);
-  const [editMinutes, setEditMinutes] = useState(minutes);
   const [editSeconds, setEditSeconds] = useState(seconds);
 
   return (
@@ -20,7 +17,7 @@ export const EditTimer = () => {
               type="text"
               pattern="[0-9]*"
               className="hours"
-              value={editHours}
+              // value={editHours}
               onChange={(e) => console.log(ETimerUnits.HOURS, e.target.value)}
             />
             <span className="input-label">
@@ -33,7 +30,7 @@ export const EditTimer = () => {
               type="text"
               pattern="[0-9]*"
               className="minutes"
-              value={editMinutes}
+              // value={editMinutes}
               onChange={(e) => console.log(ETimerUnits.MINUTES, e.target.value)}
             />
             <span className="input-label">
@@ -55,13 +52,9 @@ export const EditTimer = () => {
           </label>
         </fieldset>
       </form>
-      <div className="flex gap-4 text-4xl font-bold">
-        <div>{hours}h</div>
-        <div>{minutes}m</div>
-        <div>{seconds}s</div>
-      </div>
+      <div className="flex gap-4 text-4xl font-bold"></div>
       <div className="flex gap-4">
-        <Button onClick={toggleRunning}>{running ? 'Pause' : 'Start'}</Button>
+        {/* <Button onClick={toggleRunning}>{running ? 'Pause' : 'Start'}</Button> */}
         {running && <Button onClick={reset}>Reset</Button>}
       </div>
     </div>
