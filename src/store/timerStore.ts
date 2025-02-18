@@ -24,8 +24,6 @@ interface ITimerState {
 export const useTimerStore = create<ITimerState>()(
   persist(
     immer((set) => ({
-      hours: 0,
-      minutes: 0,
       seconds: 0,
       restartTime: 0,
 
@@ -35,6 +33,8 @@ export const useTimerStore = create<ITimerState>()(
           let { seconds } = state;
 
           seconds += value;
+
+          console.log(seconds, 'seconds TORAGE');
           return { seconds };
         }),
 

@@ -1,7 +1,7 @@
 import { ETimerUnits } from '../../../types/types';
 
 interface ILabelWithInputProps {
-  label: string;
+  label: ETimerUnits;
   value: number;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
@@ -13,9 +13,8 @@ const LabelWithInput = ({ label, value, onChange }: ILabelWithInputProps) => {
     <label className="flex flex-col text-right">
       <div className="flex ">
         <input
-          type="text"
           pattern="[0-9]*"
-          className="bg-transparent  font-bold appearance-textfieldw-[1.135em] p-0 text-right text-timerXl w-full bg-[aliceblue]"
+          className={`bg-transparent font-bold appearance-textfield w-[1.200em] p-0 text-right text-timerXl bg-[aliceblue] `}
           //   value={
           //     label === ETimerUnits.SECONDS || label === ETimerUnits.MINUTES
           //       ? formatTime(+value)
