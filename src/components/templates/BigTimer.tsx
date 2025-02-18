@@ -56,8 +56,6 @@ export const BigTimer = () => {
 
         setTimerSearchParams({ searchParams, seconds: convertedEditTime });
         setRestartTime(convertedEditTime);
-
-        console.log('KLIKAM START', convertedEditTime);
       }
     };
 
