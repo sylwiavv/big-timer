@@ -1,7 +1,7 @@
+import { ETimerUnits } from '@/types/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
-import { ETimerUnits } from '../types/types';
 
 export enum ERunning {
   IDLE = 'idle',

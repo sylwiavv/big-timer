@@ -1,11 +1,11 @@
 'use client';
 
+import { BigTimer } from '@/components/templates/BigTimer';
+import { convertToSeconds } from '@/helpers/convert-seconds';
+import { useTimerStore } from '@/store/TimerStore';
+import { setTimerSearchParams } from '@/utils/setTimerSearchParams';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { BigTimer } from '../components/templates/BigTimer';
-import { convertToSeconds } from '../helpers/convert-seconds';
-import { useTimerStore } from '../store/TimerStore';
-import { setTimerSearchParams } from '../utils/setTimerSearchParams';
 
 const Home = () => {
   const searchParams = useSearchParams();
