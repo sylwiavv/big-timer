@@ -23,6 +23,10 @@ export const EditTimer = ({
   ref: RefObject<HTMLDivElement | null>;
 }) => {
   const { editTime, setEditTime } = useTimerStore();
+  // const searchParams = useSearchParams();
+  // const pathname = usePathname();
+  // const { replace } = useRouter();
+
   const [error, setError] = useState(false);
 
   const handleEdit = (
