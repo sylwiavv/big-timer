@@ -1,49 +1,75 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { BigTimer } from '../components/templates/BigTimer';
 import { convertSeconds, convertToSeconds } from '../helpers/convert-seconds';
 import { useTimerStore } from '../store/TimerStore';
 
+interface ITimerSearchParams {
+  searchParams: ReadonlyURLSearchParams;
+  seconds: number;
+}
+
+export const setTimerSearchParams = ({
+  searchParams,
+  seconds,
+}: ITimerSearchParams) => {
+  const params = new URLSearchParams(searchParams.toString());
+
+  const { convertedHours, convertedMinutes, convertedSeconds } =
+    convertSeconds(seconds);
+
+  if (convertedHours > 0) {
+    params.set('hour', convertedHours.toString());
+  } else {
+    params.delete('hour');
+  }
+
+  if (convertedMinutes > 0) {
+    params.set('minutes', convertedMinutes.toString());
+  } else {
+    params.delete('minutes');
+  }
+
+  if (convertedSeconds > 0) {
+    params.set('seconds', convertedSeconds.toString());
+  } else {
+    params.delete('seconds');
+  }
+
+  window.history.pushState(null, '', `?${params.toString()}`);
+};
+
 const Home = () => {
   const searchParams = useSearchParams();
-  const { seconds, setSeconds } = useTimerStore();
+  const { seconds, setSeconds, restartTime, setRestartTime, setEditTime } =
+    useTimerStore();
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
-
-    const { convertedHours, convertedMinutes, convertedSeconds } =
-      convertSeconds(seconds);
-
-    if (convertedHours > 0) {
-      params.set('hour', convertedHours.toString());
-      window.history.pushState(null, '', `?${params.toString()}`);
-    }
-
-    if (convertedMinutes > 0) {
-      params.set('minutes', convertedMinutes.toString());
-      window.history.pushState(null, '', `?${params.toString()}`);
-    }
-
-    if (convertedSeconds > 0) {
-      params.set('seconds', convertedSeconds.toString());
-      window.history.pushState(null, '', `?${params.toString()}`);
-    }
-  }, [seconds]);
+    setTimerSearchParams({ searchParams, seconds });
+  }, [restartTime]);
 
   useEffect(() => {
-    const params = new URLSearchParams(searchParams.toString());
+    if (!seconds) {
+      const params = new URLSearchParams(searchParams.toString());
 
-    const hours = Number(params.get('hour'));
-    const minutes = Number(params.get('minutes'));
-    const seconds = Number(params.get('seconds'));
+      if (params.size === 0) return;
 
-    if (params.size === 0) return;
+      const hoursFromSearchParams = Number(params.get('hour'));
+      const minutesFromSearchParams = Number(params.get('minutes'));
+      const secondsFromSearchParams = Number(params.get('seconds'));
 
-    const secondsToSet = convertToSeconds(hours, minutes, seconds);
+      const secondsToSet = convertToSeconds(
+        hoursFromSearchParams,
+        minutesFromSearchParams,
+        secondsFromSearchParams
+      );
 
-    setSeconds(secondsToSet);
+      setSeconds(secondsToSet);
+      setRestartTime(secondsToSet);
+      setEditTime(() => ({ hours: 0, minutes: 0, seconds: 0 }));
+    }
   }, []);
 
   return (

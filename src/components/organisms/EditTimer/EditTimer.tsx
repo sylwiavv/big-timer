@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { RefObject, useState } from 'react';
+import { TTimeInitialValues, useTimerStore } from '../../../store/TimerStore';
 import { ETimerUnits } from '../../../types/types';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
 
@@ -16,17 +17,12 @@ const MAX_VALUES = {
   [ETimerUnits.SECONDS]: 59,
 };
 
-export const EditTimer = () => {
-  const [editTimerValues, setEditTimerValues] = useState({
-    [ETimerUnits.HOURS]: 0,
-    [ETimerUnits.MINUTES]: 0,
-    [ETimerUnits.SECONDS]: 0,
-  });
-
-  // const searchParams = useSearchParams();
-  // const pathname = usePathname();
-  // const { replace } = useRouter();
-
+export const EditTimer = ({
+  ref,
+}: {
+  ref: RefObject<HTMLDivElement | null>;
+}) => {
+  const { editTime, setEditTime } = useTimerStore();
   const [error, setError] = useState(false);
 
   const handleEdit = (
@@ -35,20 +31,19 @@ export const EditTimer = () => {
   ) => {
     setError(false);
 
-    console.log(label, 'LABEL');
-    let value = e.target.value.replace(/\D/g, '');
-
+    let value = e.target.value;
     if (value.length > 2) {
       value = value.slice(-2);
     }
 
     const numericValue = Number(value);
+    console.log(editTime, 'EDIT', numericValue);
 
     if (numericValue > MAX_VALUES[label]) {
       setError(true);
 
       setTimeout(() => {
-        setEditTimerValues((prevValues) => ({
+        setEditTime((prevValues) => ({
           ...prevValues,
           [label]: MAX_VALUES[label],
         }));
@@ -56,7 +51,7 @@ export const EditTimer = () => {
       }, 1500);
     }
 
-    setEditTimerValues((prevValues) => ({
+    setEditTime((prevValues: TTimeInitialValues) => ({
       ...prevValues,
       [label]: numericValue,
     }));
@@ -64,9 +59,10 @@ export const EditTimer = () => {
 
   return (
     <div
-      className={`bg-white rounded-lg shadow-lg text-[#392d00] ${
+      className={`bg-white p-4 rounded-lg shadow-lg text-[#392d00] flex w-full justify-center ${
         error ? 'border-4 border-red-600 bg-red-400' : 'border-transparent'
       }`}
+      ref={ref}
     >
       <form>
         <fieldset className={`flex gap-4`}>
@@ -74,7 +70,7 @@ export const EditTimer = () => {
             <LabelWithInput
               key={label}
               label={label}
-              value={editTimerValues[label]}
+              value={editTime[label]}
               onChange={(e) => handleEdit(e, label)}
             />
           ))}

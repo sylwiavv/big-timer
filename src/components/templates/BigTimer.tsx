@@ -1,7 +1,10 @@
 'use client';
 
 import { Minus, Plus } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { setTimerSearchParams } from '../../app/page';
+import { convertToSeconds } from '../../helpers/convert-seconds';
 import useCountdown from '../../hooks/useCountDown';
 import { ERunning, useTimerStore } from '../../store/TimerStore';
 import CircleButtonWithIcon from '../atoms/CircleButton/CircleButton';
@@ -11,11 +14,14 @@ import Timer from '../organisms/Timer/Timer';
 import { Button } from '../ui/button';
 
 export const BigTimer = () => {
+  const searchParams = useSearchParams();
+
   const {
     toggleRunning,
     setTime,
     running,
     seconds,
+    editTime,
     restartTime,
     setSeconds,
     setRestartTime,
@@ -41,6 +47,17 @@ export const BigTimer = () => {
         !editTimerRef.current.contains(event.target as Node)
       ) {
         setIsEditingMode(false);
+        const {
+          hours,
+          minutes,
+          seconds,
+        }: { hours: number; minutes: number; seconds: number } = editTime;
+        const convertedEditTime = convertToSeconds(hours, minutes, seconds);
+
+        setTimerSearchParams({ searchParams, seconds: convertedEditTime });
+        setRestartTime(convertedEditTime);
+
+        console.log('KLIKAM START', convertedEditTime);
       }
     };
 
@@ -55,22 +72,66 @@ export const BigTimer = () => {
     };
   }, [isEditingMode]);
 
+  const handleSetStart = () => {
+    // if (isEditingMode) {
+    const {
+      hours,
+      minutes,
+      seconds,
+    }: { hours: number; minutes: number; seconds: number } = editTime;
+    const convertedEditTime = convertToSeconds(hours, minutes, seconds);
+    const params = new URLSearchParams(searchParams.toString());
+
+    if (!hours && !minutes && !seconds) {
+      return;
+    }
+
+    if (!hours) {
+      params.delete('hour');
+    } else {
+      params.set('hour', hours.toString());
+      window.history.pushState(null, '', `?${params.toString()}`);
+    }
+
+    if (!minutes) {
+      params.delete('minutes');
+    } else {
+      params.set('minutes', hours.toString());
+      window.history.pushState(null, '', `?${params.toString()}`);
+    }
+
+    if (!seconds) {
+      params.delete('seconds');
+    } else {
+      params.set('seconds', hours.toString());
+      window.history.pushState(null, '', `?${params.toString()}`);
+    }
+
+    setSeconds(convertedEditTime);
+    toggleRunning(ERunning.RUNNING);
+
+    start();
+  };
+
+  const hadnleEditMode = () => {
+    if (running === ERunning.RUNNING) {
+      pause();
+    } else {
+      setIsEditingMode(true);
+    }
+  };
+
+  const handleRestartMode = () => {
+    console.log(restartTime, 'RESTART TIME');
+    setSeconds(restartTime);
+    restart();
+    toggleRunning(ERunning.IDLE);
+  };
+
   return (
-    <div
-      className="grid gap-4"
-      style={{
-        gridTemplateColumns:
-          'minmax(50px, 200px) minmax(310px, 1200px) minmax(50px, 200px)',
-      }}
-    >
+    <div className="flex w-full">
       <ButtonsLayout>
-        <Button
-          className="font-semibold"
-          onClick={() => {
-            start();
-            toggleRunning(ERunning.RUNNING);
-          }}
-        >
+        <Button className="font-semibold" onClick={handleSetStart}>
           Start
         </Button>
         <Button
@@ -84,28 +145,16 @@ export const BigTimer = () => {
         </Button>
 
         {(running === ERunning.RUNNING || running === ERunning.PAUSED) && (
-          <Button
-            className="font-semibold"
-            onClick={() => {
-              // setTime(+secondsFromSearchParams);
-              restart();
-              toggleRunning(ERunning.IDLE);
-            }}
-          >
-            Reset
+          <Button className="font-semibold" onClick={handleRestartMode}>
+            Restart
           </Button>
         )}
       </ButtonsLayout>
-      <div
-        className="flex flex-col items-center"
-        onClick={() => setIsEditingMode(true)}
-      >
+      <div className="flex flex-col items-center w-full">
         {isEditingMode ? (
-          <div ref={editTimerRef}>
-            <EditTimer />
-          </div>
+          <EditTimer ref={editTimerRef} />
         ) : (
-          <Timer />
+          <Timer onClick={hadnleEditMode} />
         )}
       </div>
 
