@@ -3,10 +3,10 @@
 import { Minus, Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { setTimerSearchParams } from '../../app/page';
 import { convertToSeconds } from '../../helpers/convert-seconds';
 import useCountdown from '../../hooks/useCountDown';
 import { ERunning, useTimerStore } from '../../store/TimerStore';
+import { setTimerSearchParams } from '../../utils/setTimerSearchParams';
 import CircleButtonWithIcon from '../atoms/CircleButton/CircleButton';
 import { ButtonsLayout } from '../molecules/ButtonsLayout/ButtonsLayout';
 import { EditTimer } from '../organisms/EditTimer/EditTimer';
@@ -122,7 +122,6 @@ export const BigTimer = () => {
   };
 
   const handleRestartMode = () => {
-    console.log(restartTime, 'RESTART TIME');
     setSeconds(restartTime);
     restart();
     toggleRunning(ERunning.IDLE);

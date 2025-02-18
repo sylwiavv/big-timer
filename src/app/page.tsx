@@ -1,45 +1,11 @@
 'use client';
 
-import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import { BigTimer } from '../components/templates/BigTimer';
-import { convertSeconds, convertToSeconds } from '../helpers/convert-seconds';
+import { convertToSeconds } from '../helpers/convert-seconds';
 import { useTimerStore } from '../store/TimerStore';
-
-interface ITimerSearchParams {
-  searchParams: ReadonlyURLSearchParams;
-  seconds: number;
-}
-
-export const setTimerSearchParams = ({
-  searchParams,
-  seconds,
-}: ITimerSearchParams) => {
-  const params = new URLSearchParams(searchParams.toString());
-
-  const { convertedHours, convertedMinutes, convertedSeconds } =
-    convertSeconds(seconds);
-
-  if (convertedHours > 0) {
-    params.set('hour', convertedHours.toString());
-  } else {
-    params.delete('hour');
-  }
-
-  if (convertedMinutes > 0) {
-    params.set('minutes', convertedMinutes.toString());
-  } else {
-    params.delete('minutes');
-  }
-
-  if (convertedSeconds > 0) {
-    params.set('seconds', convertedSeconds.toString());
-  } else {
-    params.delete('seconds');
-  }
-
-  window.history.pushState(null, '', `?${params.toString()}`);
-};
+import { setTimerSearchParams } from '../utils/setTimerSearchParams';
 
 const Home = () => {
   const searchParams = useSearchParams();
