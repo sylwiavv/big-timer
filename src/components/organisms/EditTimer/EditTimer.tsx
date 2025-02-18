@@ -1,8 +1,8 @@
 'use client';
 
+import { TTimeInitialValues, useTimerStore } from '@/store/TimerStore';
+import { ETimerUnits } from '@/types/types';
 import { RefObject, useState } from 'react';
-import { TTimeInitialValues, useTimerStore } from '../../../store/TimerStore';
-import { ETimerUnits } from '../../../types/types';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
 
 const InputsViarants = [

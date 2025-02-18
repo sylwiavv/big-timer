@@ -1,8 +1,8 @@
 'use client';
 
-import { convertSeconds } from '../../../helpers/convert-seconds';
-import { useTimerStore } from '../../../store/TimerStore';
-import { ETimerUnits } from '../../../types/types';
+import { convertSeconds } from '@/helpers/convert-seconds';
+import { useTimerStore } from '@/store/TimerStore';
+import { ETimerUnits } from '@/types/types';
 import TimerUnit from '../../atoms/TimerUnit/TimerUnit';
 
 const Timer = ({ onClick }: { onClick: () => void }) => {

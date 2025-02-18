@@ -1,12 +1,12 @@
 'use client';
 
+import { convertToSeconds } from '@/helpers/convert-seconds';
+import useCountdown from '@/hooks/useCountDown';
+import { ERunning, useTimerStore } from '@/store/TimerStore';
+import { setTimerSearchParams } from '@/utils/setTimerSearchParams';
 import { Minus, Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import { convertToSeconds } from '../../helpers/convert-seconds';
-import useCountdown from '../../hooks/useCountDown';
-import { ERunning, useTimerStore } from '../../store/TimerStore';
-import { setTimerSearchParams } from '../../utils/setTimerSearchParams';
 import CircleButtonWithIcon from '../atoms/CircleButton/CircleButton';
 import { ButtonsLayout } from '../molecules/ButtonsLayout/ButtonsLayout';
 import { EditTimer } from '../organisms/EditTimer/EditTimer';
