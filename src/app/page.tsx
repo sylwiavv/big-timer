@@ -9,8 +9,7 @@ import { useEffect } from 'react';
 
 const Home = () => {
   const searchParams = useSearchParams();
-  const { seconds, setSeconds, restartTime, setRestartTime, setEditTime } =
-    useTimerStore();
+  const { seconds, setSeconds, restartTime, setRestartTime } = useTimerStore();
 
   useEffect(() => {
     setTimerSearchParams({ searchParams, seconds });
@@ -34,7 +33,7 @@ const Home = () => {
 
       setSeconds(secondsToSet);
       setRestartTime(secondsToSet);
-      setEditTime(() => ({ hours: 0, minutes: 0, seconds: 0 }));
+      // setEditTime(() => ({ hours: 0, minutes: 0, seconds: 0 }));
     }
   }, []);
 

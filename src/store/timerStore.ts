@@ -21,15 +21,11 @@ interface ITimerState {
   restartTime: number;
   seconds: number;
   running: ERunning;
-  editTime: TTimeInitialValues;
   setTime: (value: number) => void;
   setSeconds: (value: number) => void;
   toggleRunning: (running: ERunning) => void;
 
   setRestartTime: (time: number) => void;
-  setEditTime: (
-    updateFn: (prevValues: TTimeInitialValues) => TTimeInitialValues
-  ) => void;
 }
 
 export const useTimerStore = create<ITimerState>()(
@@ -39,11 +35,6 @@ export const useTimerStore = create<ITimerState>()(
       restartTime: 0,
 
       running: ERunning.IDLE,
-      editTime: {
-        [ETimerUnits.HOURS]: 0,
-        [ETimerUnits.MINUTES]: 0,
-        [ETimerUnits.SECONDS]: 0,
-      },
       setTime: (value) =>
         set((state) => {
           let { seconds } = state;
@@ -70,12 +61,6 @@ export const useTimerStore = create<ITimerState>()(
           // state.minutes = 0;
           // state.running = ERunning.IDLE;
         }),
-      setEditTime: (
-        updateFn: (prevValues: TTimeInitialValues) => TTimeInitialValues
-      ) =>
-        set((state) => ({
-          editTime: updateFn(state.editTime),
-        })),
     })),
     {
       name: 'timer-storage',

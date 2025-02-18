@@ -1,18 +1,8 @@
 import { useEffect } from 'react';
+import { ERunning, useTimerStore } from '../store/TimerStore';
 
-interface CountdownOptions {
-  seconds: number;
-  running: boolean;
-  setTime: (value: number) => void;
-  toggleRunning: (state: boolean) => void;
-}
-
-const useCountdown = ({
-  seconds,
-  running,
-  setTime,
-  toggleRunning,
-}: CountdownOptions) => {
+const useCountdown = () => {
+  const { toggleRunning, setTime, running, seconds } = useTimerStore();
   useEffect(() => {
     if (!running || seconds <= 0) return;
 
@@ -23,10 +13,10 @@ const useCountdown = ({
     return () => clearInterval(interval);
   }, [seconds, running, setTime]);
 
-  const start = () => toggleRunning(true);
-  const pause = () => toggleRunning(false);
+  const start = () => toggleRunning(ERunning.RUNNING);
+  const pause = () => toggleRunning(ERunning.PAUSED);
   const restart = () => {
-    toggleRunning(true);
+    toggleRunning(ERunning.RUNNING);
   };
 
   return { seconds, running, start, pause, restart };

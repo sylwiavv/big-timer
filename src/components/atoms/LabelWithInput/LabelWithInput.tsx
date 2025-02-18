@@ -8,6 +8,7 @@ interface ILabelWithInputProps {
 
 const LabelWithInput = ({ label, value, onChange }: ILabelWithInputProps) => {
   //   const { formatTime } = useFormattedTime();
+  console.log(value, 'LABEL');
   return (
     <label className="flex flex-col text-right">
       <div className="flex items-center leading-[.90]">
