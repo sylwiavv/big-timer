@@ -1,11 +1,11 @@
 'use client';
 
 import { convertSeconds } from '@/helpers/convert-seconds';
-import { ERunning, useTimerStore } from '@/store/TimerStore';
 import { ETimerUnits } from '@/types/types';
 import { Minus, Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import useCountdown from '../../../hooks/useCountDown';
+import { ERunning, useTimerStore } from '../../../store/TimerStore';
 import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import CircleButtonWithIcon from '../../atoms/CircleButton/CircleButton';
 import TimerUnit from '../../atoms/TimerUnit/TimerUnit';

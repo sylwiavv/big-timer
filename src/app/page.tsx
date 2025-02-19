@@ -1,9 +1,9 @@
 'use client';
 
 import { BigTimer } from '@/components/templates/BigTimer';
-import { useTimerStore } from '@/store/TimerStore';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { useTimerStore } from '../store/TimerStore';
 import { getSearchParamas } from '../utils/getSearchParams';
 import { setTimerSearchParams } from '../utils/setTimerSearchParams';
 import { sixHoursInSeconds } from './constants/constants';

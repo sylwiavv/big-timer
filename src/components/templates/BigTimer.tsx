@@ -1,8 +1,8 @@
 'use client';
 
 import useCountdown from '@/hooks/useCountDown';
-import { ERunning, useTimerStore } from '@/store/TimerStore';
 import { useRef, useState } from 'react';
+import { ERunning, useTimerStore } from '../../store/TimerStore';
 import { EditTimer } from '../organisms/EditTimer/EditTimer';
 import Timer from '../organisms/Timer/Timer';
 
