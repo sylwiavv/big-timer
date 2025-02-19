@@ -2,8 +2,14 @@
 
 import { ETimerUnits } from '@/types/types';
 import { useSearchParams } from 'next/navigation';
-import { useState } from 'react';
-import { convertToSeconds } from '../../../helpers/convert-seconds';
+import { useEffect, useState } from 'react';
+import {
+  convertSeconds,
+  convertToSeconds,
+} from '../../../helpers/convert-seconds';
+import useCountdown from '../../../hooks/useCountDown';
+import { useTimerStore } from '../../../store/TimerStore';
+import { getSearchParamas } from '../../../utils/getSearchParams';
 import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
 import { Button } from '../../ui/button';
@@ -20,19 +26,42 @@ const MAX_VALUES = {
   [ETimerUnits.SECONDS]: 59,
 };
 
-export const EditTimer = () => {
+export const EditTimer = ({
+  setIsEditingMode,
+}: {
+  setIsEditingMode: (value: boolean) => void;
+}) => {
   const searchParams = useSearchParams();
+  const { toggleRunning, setTime, running, seconds, setSeconds } =
+    useTimerStore();
+  const { start, pause, restart } = useCountdown();
 
   const [editTime, setEditTime] = useState(InputsViarants);
 
-  const [error, setError] = useState(false);
+  const [error, setError] = useState<{
+    error: boolean;
+    label: ETimerUnits | null;
+  }>({
+    error: false,
+    label: null,
+  });
+
+  const handleResetError = () => {
+    setError({ error: false, label: null });
+  };
+
+  const handleSetError = (unit: ETimerUnits) => {
+    setError({
+      error: true,
+      label: unit,
+    });
+  };
 
   const handleEdit = (
     e: React.ChangeEvent<HTMLInputElement>,
     label: ETimerUnits
   ) => {
-    setError(false);
-
+    handleResetError();
     let value = e.target.value;
     if (value.length > 2) {
       value = value.slice(-2);
@@ -41,7 +70,7 @@ export const EditTimer = () => {
     const numericValue = Number(value);
 
     if (numericValue > MAX_VALUES[label]) {
-      setError(true);
+      handleSetError(label);
 
       setTimeout(() => {
         setEditTime((prevState) =>
@@ -50,7 +79,7 @@ export const EditTimer = () => {
           )
         );
 
-        setError(false);
+        handleResetError();
       }, 1500);
     }
 
@@ -62,23 +91,75 @@ export const EditTimer = () => {
   };
 
   const handleSetStart = () => {
-    const timeObject = Object.fromEntries(
-      editTime.map(({ label, value }) => [label, value])
-    );
-    const { hours, minutes, seconds } = timeObject;
+    console.log(editTime);
+    setIsEditingMode(false);
 
-    const convertedTime = convertToSeconds(hours, minutes, seconds);
-    setTimerSearchParams({ searchParams, seconds: convertedTime });
+    const hours =
+      editTime.find((item) => item.label === ETimerUnits.HOURS)?.value || 0;
+    const minutes =
+      editTime.find((item) => item.label === ETimerUnits.MINUTES)?.value || 0;
+    const seconds =
+      editTime.find((item) => item.label === ETimerUnits.SECONDS)?.value || 0;
+
+    const convertedEditTime = convertToSeconds(hours, minutes, seconds);
+
+    setTimerSearchParams({
+      searchParams,
+      seconds: convertedEditTime,
+      setSeconds,
+    });
+
+    start();
+
+    // if (error.error) {
+    //   if (error.label === ETimerUnits.HOURS) {
+    //     setEditTime((prevState) =>
+    //       prevState.map((item) =>
+    //         item.label === error.label
+    //           ? { ...item, value: MAX_VALUES[error.label] }
+    //           : item
+    //       )
+    //     );
+    //   }
+    //   const hours =
+    //     editTime.find((item) => item.label === ETimerUnits.HOURS)?.value || 0;
+    //   const minutes =
+    //     editTime.find((item) => item.label === ETimerUnits.MINUTES)?.value || 0;
+    //   const seconds =
+    //     editTime.find((item) => item.label === ETimerUnits.SECONDS)?.value || 0;
+
+    //   const convertedEditTime = convertToSeconds(hours, minutes, seconds);
+
+    //   setTimerSearchParams({ searchParams, seconds: convertedEditTime });
+    // } else {
+
+    // }
   };
 
+  console.log(editTime);
+
+  useEffect(() => {
+    getSearchParamas({ searchParams, setSeconds });
+    const { convertedHours, convertedMinutes, convertedSeconds } =
+      convertSeconds(seconds);
+
+    setEditTime([
+      { label: ETimerUnits.HOURS, value: convertedHours },
+      { label: ETimerUnits.MINUTES, value: convertedMinutes },
+      { label: ETimerUnits.SECONDS, value: convertedSeconds },
+    ]);
+  }, []);
+
   return (
-    <div className="flex items-center gap-4 w-full bg-pink-500">
+    <div className="flex items-center gap-4 w-full">
       <Button className="font-semibold" onClick={handleSetStart}>
         Start
       </Button>
       <div
         className={`bg-white rounded-lg shadow-lg text-[#392d00] flex w-full justify-center ${
-          error ? 'border-4 border-red-600 bg-red-400' : 'border-transparent'
+          error.error
+            ? 'border-4 border-red-600 bg-red-400'
+            : 'border-transparent'
         }`}
       >
         <form>

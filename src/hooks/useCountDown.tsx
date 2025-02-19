@@ -1,7 +1,7 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
-import { getSearchParamas } from '../app/page';
 import { ERunning, useTimerStore } from '../store/TimerStore';
+import { getSearchParamas } from '../utils/getSearchParams';
 
 const useCountdown = () => {
   const searchParams = useSearchParams();
@@ -22,7 +22,6 @@ const useCountdown = () => {
   const start = () => toggleRunning(ERunning.RUNNING);
   const pause = () => {
     toggleRunning(ERunning.PAUSED);
-    console.log('PAUSE');
   };
   const restart = () => {
     toggleRunning(ERunning.IDLE);

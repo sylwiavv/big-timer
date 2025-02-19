@@ -3,10 +3,12 @@ import { convertSeconds } from '../helpers/convert-seconds';
 interface ITimerSearchParams {
   searchParams: ReadonlyURLSearchParams;
   seconds: number;
+  setSeconds?: (val: number) => void;
 }
 export const setTimerSearchParams = ({
   searchParams,
   seconds,
+  setSeconds,
 }: ITimerSearchParams) => {
   const params = new URLSearchParams(searchParams.toString());
 
@@ -32,4 +34,8 @@ export const setTimerSearchParams = ({
   }
 
   window.history.pushState(null, '', `?${params.toString()}`);
+
+  if (setSeconds) {
+    setSeconds(seconds);
+  }
 };

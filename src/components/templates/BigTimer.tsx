@@ -16,6 +16,7 @@ export const BigTimer = () => {
   const { start, pause, restart } = useCountdown();
 
   const [isEditingMode, setIsEditingMode] = useState(false);
+
   const editTimerRef = useRef<HTMLDivElement>(null);
 
   const emptyTimer = seconds === 0;
@@ -60,7 +61,11 @@ export const BigTimer = () => {
 
   return (
     <div className="flex flex-col items-center w-full p-6" ref={editTimerRef}>
-      {isEditingMode ? <EditTimer /> : <Timer onClick={hadnleEditMode} />}
+      {isEditingMode ? (
+        <EditTimer setIsEditingMode={setIsEditingMode} />
+      ) : (
+        <Timer onClick={hadnleEditMode} />
+      )}
     </div>
   );
 };

@@ -1,3 +1,4 @@
+import useFormattedTime from '../../../hooks/useFormattedTime';
 import { ETimerUnits } from '../../../types/types';
 
 interface ILabelWithInputProps {
@@ -7,20 +8,15 @@ interface ILabelWithInputProps {
 }
 
 const LabelWithInput = ({ label, value, onChange }: ILabelWithInputProps) => {
-  //   const { formatTime } = useFormattedTime();
-  console.log(value, 'LABEL');
+  const { formatTime } = useFormattedTime();
+
   return (
     <label className="flex flex-col text-right">
       <div className="flex items-center leading-[.90]">
         <input
           pattern="[0-9]*"
           className={`bg-transparent font-bold appearance-textfield w-[1.200em] p-0 text-right text-timerXl bg-[aliceblue] `}
-          //   value={
-          //     label === ETimerUnits.SECONDS || label === ETimerUnits.MINUTES
-          //       ? formatTime(+value)
-          //       : +value
-          //   }
-          value={!value ? 0 : +value}
+          value={label !== ETimerUnits.HOURS ? formatTime(+value) : value}
           onChange={onChange}
         />
         <span className="text-timerXl">

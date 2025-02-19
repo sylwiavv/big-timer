@@ -40,28 +40,35 @@ const Timer = ({ onClick }: { onClick: () => void }) => {
     if (updatedSeconds < 0) return;
 
     setSeconds(updatedSeconds);
-    setTimerSearchParams({ searchParams, seconds: seconds + valueToHandle });
+    setTimerSearchParams({
+      searchParams,
+      seconds: seconds + valueToHandle,
+      setSeconds,
+    });
   };
 
   return (
     <div className="bg-orange-500 flex items-center gap-4 w-full">
       <ButtonsLayout>
-        <Button className="font-semibold" onClick={handleSetStart}>
-          Start
-        </Button>
-        <Button
-          className="font-semibold"
-          onClick={() => {
-            pause();
-            toggleRunning(ERunning.PAUSED);
-          }}
-        >
-          Pause
-        </Button>
+        {running === ERunning.PAUSED || running === ERunning.IDLE ? (
+          <>
+            <Button className="font-semibold" onClick={handleSetStart}>
+              Start
+            </Button>
 
-        {(running === ERunning.RUNNING || running === ERunning.PAUSED) && (
-          <Button className="font-semibold" onClick={handleRestartMode}>
-            Restart
+            <Button className="font-semibold" onClick={handleRestartMode}>
+              Restart
+            </Button>
+          </>
+        ) : (
+          <Button
+            className="font-semibold"
+            onClick={() => {
+              pause();
+              toggleRunning(ERunning.PAUSED);
+            }}
+          >
+            Pause
           </Button>
         )}
       </ButtonsLayout>
