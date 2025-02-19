@@ -1,11 +1,12 @@
 'use client';
 
-import { convertSeconds, convertToSeconds } from '@/helpers/convert-seconds';
+import { convertSeconds } from '@/helpers/convert-seconds';
 import { ERunning, useTimerStore } from '@/store/TimerStore';
 import { ETimerUnits } from '@/types/types';
 import { Minus, Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
 import useCountdown from '../../../hooks/useCountDown';
+import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import CircleButtonWithIcon from '../../atoms/CircleButton/CircleButton';
 import TimerUnit from '../../atoms/TimerUnit/TimerUnit';
 import { ButtonsLayout } from '../../molecules/ButtonsLayout/ButtonsLayout';
@@ -13,68 +14,33 @@ import { Button } from '../../ui/button';
 
 const Timer = ({ onClick }: { onClick: () => void }) => {
   const searchParams = useSearchParams();
-
-  const handleSetStart = () => {
-    // if (isEditingMode) {
-    const {
-      hours,
-      minutes,
-      seconds,
-    }: { hours: number; minutes: number; seconds: number } = editTime;
-    const convertedEditTime = convertToSeconds(hours, minutes, seconds);
-    const params = new URLSearchParams(searchParams.toString());
-
-    if (!hours && !minutes && !seconds) {
-      return;
-    }
-
-    if (!hours) {
-      params.delete('hour');
-    } else {
-      params.set('hour', hours.toString());
-      window.history.pushState(null, '', `?${params.toString()}`);
-    }
-
-    if (!minutes) {
-      params.delete('minutes');
-    } else {
-      params.set('minutes', hours.toString());
-      window.history.pushState(null, '', `?${params.toString()}`);
-    }
-
-    if (!seconds) {
-      params.delete('seconds');
-    } else {
-      params.set('seconds', hours.toString());
-      window.history.pushState(null, '', `?${params.toString()}`);
-    }
-
-    setSeconds(convertedEditTime);
-    toggleRunning(ERunning.RUNNING);
-
-    start();
-  };
-
-  const {
-    toggleRunning,
-    setTime,
-    running,
-    seconds,
-    editTime,
-    restartTime,
-    setSeconds,
-    setRestartTime,
-  } = useTimerStore();
+  const { toggleRunning, setTime, running, seconds, setSeconds } =
+    useTimerStore();
 
   const { convertedSeconds, convertedMinutes, convertedHours } =
     convertSeconds(seconds);
 
   const { start, pause, restart } = useCountdown();
 
+  const handleSetStart = () => {
+    toggleRunning(ERunning.RUNNING);
+
+    start();
+  };
+
   const handleRestartMode = () => {
-    setSeconds(restartTime);
     restart();
     toggleRunning(ERunning.IDLE);
+  };
+
+  const handleTimeChange = (type: 'plus' | 'minus') => {
+    let value = seconds < 59 ? 5 : 15;
+    let valueToHandle = type === 'plus' ? value : -value;
+    let updatedSeconds = seconds + valueToHandle;
+    if (updatedSeconds < 0) return;
+
+    setSeconds(updatedSeconds);
+    setTimerSearchParams({ searchParams, seconds: seconds + valueToHandle });
   };
 
   return (
@@ -113,19 +79,11 @@ const Timer = ({ onClick }: { onClick: () => void }) => {
       <ButtonsLayout>
         <CircleButtonWithIcon
           icon={<Plus />}
-          onClick={() => {
-            setRestartTime(seconds);
-            // addParamsToUrl();
-            setTime(5);
-          }}
+          onClick={() => handleTimeChange('plus')}
         />
         <CircleButtonWithIcon
           icon={<Minus />}
-          onClick={() => {
-            setRestartTime(seconds);
-            // addParamsToUrl();
-            setTime(-5);
-          }}
+          onClick={() => handleTimeChange('minus')}
         />
       </ButtonsLayout>
     </div>

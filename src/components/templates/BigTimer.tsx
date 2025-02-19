@@ -10,15 +10,8 @@ import Timer from '../organisms/Timer/Timer';
 export const BigTimer = () => {
   const searchParams = useSearchParams();
 
-  const {
-    toggleRunning,
-    setTime,
-    running,
-    seconds,
-    restartTime,
-    setSeconds,
-    setRestartTime,
-  } = useTimerStore();
+  const { toggleRunning, setTime, running, seconds, setSeconds } =
+    useTimerStore();
 
   const { start, pause, restart } = useCountdown();
 
