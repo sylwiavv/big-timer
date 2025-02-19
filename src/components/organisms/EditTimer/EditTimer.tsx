@@ -2,7 +2,7 @@
 
 import { ETimerUnits } from '@/types/types';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { RefObject, useEffect, useState } from 'react';
 import {
   convertSeconds,
   convertToSeconds,
@@ -26,22 +26,29 @@ const MAX_VALUES = {
   [ETimerUnits.SECONDS]: 59,
 };
 
-export const EditTimer = ({
-  setIsEditingMode,
-}: {
+interface IEditTimerProps {
+  isEditingMode: boolean;
   setIsEditingMode: (value: boolean) => void;
-}) => {
+  ref: RefObject<HTMLDivElement | null>;
+}
+
+type TErrorTimer = {
+  error: boolean;
+  label: ETimerUnits | null;
+};
+
+export const EditTimer = ({
+  isEditingMode,
+  setIsEditingMode,
+  ref,
+}: IEditTimerProps) => {
   const searchParams = useSearchParams();
-  const { toggleRunning, setTime, running, seconds, setSeconds } =
-    useTimerStore();
-  const { start, pause, restart } = useCountdown();
+  const { seconds, setSeconds } = useTimerStore();
+  const { start } = useCountdown();
 
   const [editTime, setEditTime] = useState(InputsViarants);
 
-  const [error, setError] = useState<{
-    error: boolean;
-    label: ETimerUnits | null;
-  }>({
+  const [error, setError] = useState<TErrorTimer>({
     error: false,
     label: null,
   });
@@ -55,6 +62,10 @@ export const EditTimer = ({
       error: true,
       label: unit,
     });
+  };
+
+  const hadnleEditMode = (value: boolean) => {
+    setIsEditingMode(value);
   };
 
   const handleEdit = (
@@ -91,8 +102,7 @@ export const EditTimer = ({
   };
 
   const handleSetStart = () => {
-    console.log(editTime);
-    setIsEditingMode(false);
+    hadnleEditMode(false);
 
     const hours =
       editTime.find((item) => item.label === ETimerUnits.HOURS)?.value || 0;
@@ -136,7 +146,23 @@ export const EditTimer = ({
     // }
   };
 
-  console.log(editTime);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) {
+        hadnleEditMode(false);
+      }
+    };
+
+    if (isEditingMode) {
+      document.addEventListener('mousedown', handleClickOutside);
+    } else {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isEditingMode]);
 
   useEffect(() => {
     getSearchParamas({ searchParams, setSeconds });
