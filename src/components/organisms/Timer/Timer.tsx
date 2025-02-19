@@ -12,10 +12,13 @@ import TimerUnit from '../../atoms/TimerUnit/TimerUnit';
 import { ButtonsLayout } from '../../molecules/ButtonsLayout/ButtonsLayout';
 import { Button } from '../../ui/button';
 
-const Timer = ({ onClick }: { onClick: () => void }) => {
+interface ITimerProps {
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
+
+const Timer = ({ onClick }: ITimerProps) => {
   const searchParams = useSearchParams();
-  const { toggleRunning, setTime, running, seconds, setSeconds } =
-    useTimerStore();
+  const { toggleRunning, running, seconds, setSeconds } = useTimerStore();
 
   const { convertedSeconds, convertedMinutes, convertedHours } =
     convertSeconds(seconds);
@@ -48,7 +51,7 @@ const Timer = ({ onClick }: { onClick: () => void }) => {
   };
 
   return (
-    <div className="bg-orange-500 flex items-center gap-4 w-full">
+    <div className="flex items-center gap-4 w-full">
       <ButtonsLayout>
         {running === ERunning.PAUSED || running === ERunning.IDLE ? (
           <>
@@ -73,10 +76,7 @@ const Timer = ({ onClick }: { onClick: () => void }) => {
         )}
       </ButtonsLayout>
 
-      <div
-        className="flex w-full justify-center  bg-[#5080aa]"
-        onClick={onClick}
-      >
+      <div className="flex w-full justify-center" onClick={onClick}>
         {/* {hours > 0 && <TimerUnit time={hours} unit={ETimerUnits.HOURS} />} */}
         <TimerUnit time={convertedHours} unit={ETimerUnits.HOURS} />
         <TimerUnit time={convertedMinutes} unit={ETimerUnits.MINUTES} />

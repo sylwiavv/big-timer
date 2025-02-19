@@ -30,6 +30,8 @@ interface IEditTimerProps {
   isEditingMode: boolean;
   setIsEditingMode: (value: boolean) => void;
   ref: RefObject<HTMLDivElement | null>;
+  currentEditingUnit?: ETimerUnits;
+  setCurrentEditingUnit: (unit: ETimerUnits) => void;
 }
 
 type TErrorTimer = {
@@ -41,6 +43,8 @@ export const EditTimer = ({
   isEditingMode,
   setIsEditingMode,
   ref,
+  currentEditingUnit,
+  setCurrentEditingUnit,
 }: IEditTimerProps) => {
   const searchParams = useSearchParams();
   const { seconds, setSeconds } = useTimerStore();
@@ -72,14 +76,12 @@ export const EditTimer = ({
     e: React.ChangeEvent<HTMLInputElement>,
     label: ETimerUnits
   ) => {
-    handleResetError();
     let value = e.target.value;
     if (value.length > 2) {
       value = value.slice(-2);
     }
 
     const numericValue = Number(value);
-
     if (numericValue > MAX_VALUES[label]) {
       handleSetError(label);
 
@@ -89,9 +91,9 @@ export const EditTimer = ({
             item.label === label ? { ...item, value: MAX_VALUES[label] } : item
           )
         );
-
-        handleResetError();
-      }, 1500);
+      }, 2500);
+    } else {
+      handleResetError();
     }
 
     setEditTime((prevState) =>
@@ -101,8 +103,13 @@ export const EditTimer = ({
     );
   };
 
+  if (!error.error) {
+  }
+
   const handleSetStart = () => {
     hadnleEditMode(false);
+
+    if (error.error) return;
 
     const hours =
       editTime.find((item) => item.label === ETimerUnits.HOURS)?.value || 0;
@@ -120,30 +127,6 @@ export const EditTimer = ({
     });
 
     start();
-
-    // if (error.error) {
-    //   if (error.label === ETimerUnits.HOURS) {
-    //     setEditTime((prevState) =>
-    //       prevState.map((item) =>
-    //         item.label === error.label
-    //           ? { ...item, value: MAX_VALUES[error.label] }
-    //           : item
-    //       )
-    //     );
-    //   }
-    //   const hours =
-    //     editTime.find((item) => item.label === ETimerUnits.HOURS)?.value || 0;
-    //   const minutes =
-    //     editTime.find((item) => item.label === ETimerUnits.MINUTES)?.value || 0;
-    //   const seconds =
-    //     editTime.find((item) => item.label === ETimerUnits.SECONDS)?.value || 0;
-
-    //   const convertedEditTime = convertToSeconds(hours, minutes, seconds);
-
-    //   setTimerSearchParams({ searchParams, seconds: convertedEditTime });
-    // } else {
-
-    // }
   };
 
   useEffect(() => {
@@ -176,28 +159,34 @@ export const EditTimer = ({
     ]);
   }, []);
 
+  const handleOnClick = (label: ETimerUnits) => {
+    setCurrentEditingUnit(label);
+  };
+
   return (
     <div className="flex items-center gap-4 w-full">
       <Button className="font-semibold" onClick={handleSetStart}>
         Start
       </Button>
       <div
-        className={`bg-white rounded-lg shadow-lg text-[#392d00] flex w-full justify-center ${
+        className={`rounded-lg shadow-lg text-[#392d00] flex w-full justify-center p-4 transition-background-color duration-300 ease-in-out ${
           error.error
             ? 'border-4 border-red-600 bg-red-400'
-            : 'border-transparent'
+            : 'border-transparent bg-white'
         }`}
       >
         <form>
           <fieldset className={`flex gap-4`}>
             {InputsViarants.map(({ label }) => (
               <LabelWithInput
+                className={`${currentEditingUnit === label ? 'bg-yellow-200' : 'transparent'}`}
                 key={label}
                 label={label}
                 value={
                   editTime.find((item) => item.label === label)?.value || 0
                 }
                 onChange={(e) => handleEdit(e, label)}
+                onClick={() => handleOnClick(label)}
               />
             ))}
           </fieldset>

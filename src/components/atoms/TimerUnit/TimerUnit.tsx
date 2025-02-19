@@ -13,10 +13,10 @@ export default function TimerUnit({ time, unit }: ITimerUnitProps) {
 
   return (
     <div
-      className={`flex font-extrabold text-timerXl justify-center items-center ${unit === ETimerUnits.HOURS ? 'text-center' : 'text-right'}`}
+      className={`flex font-bold text-timerXl justify-center items-center ${unit === ETimerUnits.HOURS ? 'text-center' : 'text-right'}`}
     >
       <div className="flex flex-col">
-        <p className="leading-[.90]">
+        <p className="leading-[.80]" data-unit={unit}>
           {unit === ETimerUnits.SECONDS || unit === ETimerUnits.MINUTES
             ? formatTime(time)
             : time}
