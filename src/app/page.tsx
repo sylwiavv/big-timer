@@ -25,7 +25,6 @@ const Home = () => {
       secondsFromLocalStorage = timeFromLocalStorage.state.seconds;
     }
 
-    console.log(searchParams.size === 0 && !secondsFromLocalStorage);
     if (searchParams.size === 0 && !secondsFromLocalStorage) {
       setSeconds(sixHoursInSeconds);
       window.history.replaceState({}, '', `?hours=6`);
