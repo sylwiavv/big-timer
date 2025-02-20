@@ -4,6 +4,7 @@ import { convertSeconds } from '@/helpers/convert-seconds';
 import { ETimerUnits } from '@/types/types';
 import { Minus, Plus } from 'lucide-react';
 import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import useCountdown from '../../../hooks/useCountDown';
 import { ERunning, useTimerStore } from '../../../store/TimerStore';
 import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
@@ -18,6 +19,8 @@ interface ITimerProps {
 
 const Timer = ({ onClick }: ITimerProps) => {
   const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams.toString());
+
   const { toggleRunning, running, seconds, setSeconds } = useTimerStore();
 
   const { convertedSeconds, convertedMinutes, convertedHours } =
@@ -27,9 +30,33 @@ const Timer = ({ onClick }: ITimerProps) => {
 
   const handleSetStart = () => {
     toggleRunning(ERunning.RUNNING);
+    const params = new URLSearchParams(searchParams.toString());
+
+    const targetTime = Math.floor(Date.now() / 1000) + seconds;
+
+    params.set('target', targetTime.toString());
+
+    console.log('test');
+    window.history.pushState(null, '', `?${params.toString()}`);
 
     start();
   };
+
+  useEffect(() => {
+    const targetParam = searchParams.get('target');
+
+    if (targetParam) {
+      const targetTime = Number(targetParam);
+      const currentTime = Math.floor(Date.now() / 1000);
+      const remainingTime = Math.max(targetTime - currentTime, 0);
+
+      setSeconds(remainingTime);
+      if (remainingTime > 0) {
+        toggleRunning(ERunning.RUNNING);
+        start();
+      }
+    }
+  }, []);
 
   const handleRestartMode = () => {
     restart();
@@ -69,6 +96,9 @@ const Timer = ({ onClick }: ITimerProps) => {
             onClick={() => {
               pause();
               toggleRunning(ERunning.PAUSED);
+
+              params.delete('target');
+              window.history.pushState(null, '', `?${params.toString()}`);
             }}
           >
             Pause
