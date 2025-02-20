@@ -5,13 +5,15 @@ import { getSearchParamas } from '../utils/getSearchParams';
 
 const useCountdown = () => {
   const searchParams = useSearchParams();
-  const { toggleRunning, running, seconds, setSeconds } = useTimerStore();
+  const { toggleRunning, running, milliseconds, setMili } = useTimerStore();
 
   useEffect(() => {
-    if (running !== ERunning.RUNNING || seconds <= 0) return;
+    if (running !== ERunning.RUNNING || milliseconds <= 0) return;
 
     const interval = setInterval(() => {
-      setSeconds((prevSeconds: number) => Math.max(0, prevSeconds - 1));
+      setMili((prevMilliseconds: number) =>
+        Math.max(0, prevMilliseconds - 1000)
+      );
     }, 1000);
 
     return () => clearInterval(interval);
@@ -23,10 +25,10 @@ const useCountdown = () => {
   };
   const restart = () => {
     toggleRunning(ERunning.IDLE);
-    getSearchParamas({ searchParams, setSeconds });
+    getSearchParamas({ searchParams, setMili });
   };
 
-  return { seconds, running, start, pause, restart };
+  return { milliseconds, running, start, pause, restart };
 };
 
 export default useCountdown;

@@ -1,14 +1,14 @@
 import { ReadonlyURLSearchParams } from 'next/navigation';
-import { convertToSeconds } from '../helpers/convert-seconds';
+import { convertToMilliseconds } from '../helpers/convert-seconds';
 
 interface IGetSearchParamasProps {
   searchParams: ReadonlyURLSearchParams;
-  setSeconds: (value: number) => void;
+  setMili?: (value: number) => void;
 }
 
 export const getSearchParamas = ({
   searchParams,
-  setSeconds,
+  setMili,
 }: IGetSearchParamasProps) => {
   const params = new URLSearchParams(searchParams.toString());
 
@@ -18,11 +18,12 @@ export const getSearchParamas = ({
   const minutesFromSearchParams = Number(params.get('minutes')) || 0;
   const secondsFromSearchParams = Number(params.get('seconds')) || 0;
 
-  const secondsToSet = convertToSeconds(
+  const miilli = convertToMilliseconds(
     hoursFromSearchParams,
     minutesFromSearchParams,
     secondsFromSearchParams
   );
 
-  setSeconds(secondsToSet);
+  // if there is not target search param then set setMili
+  setMili && setMili(miilli);
 };

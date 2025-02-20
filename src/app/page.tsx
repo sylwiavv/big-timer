@@ -3,18 +3,20 @@
 import { BigTimer } from '@/components/templates/BigTimer';
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { updateSearchParams } from '../components/organisms/EditTimer/EditTimer';
 import { useTimerStore } from '../store/TimerStore';
 import { getSearchParamas } from '../utils/getSearchParams';
 import { setTimerSearchParams } from '../utils/setTimerSearchParams';
-import { SIX_HOURS_IN_SECONDS } from './constants/constants';
+import { SIX_HOURS_IN_MILLISECONDS } from './constants/constants';
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
-  const { seconds, setSeconds } = useTimerStore();
+
+  const { milliseconds, setMili } = useTimerStore();
 
   useEffect(() => {
-    if (!seconds) {
-      getSearchParamas({ searchParams, setSeconds });
+    if (!milliseconds) {
+      getSearchParamas({ searchParams, setMili });
     }
 
     let secondsFromLocalStorage;
@@ -25,14 +27,16 @@ const Home = () => {
     }
 
     if (searchParams.size === 0 && !secondsFromLocalStorage) {
-      setSeconds(SIX_HOURS_IN_SECONDS);
+      setMili(SIX_HOURS_IN_MILLISECONDS);
       window.history.replaceState({}, '', `?hours=6`);
     }
     setLoading(false);
   }, []);
 
   useEffect(() => {
-    setTimerSearchParams({ searchParams, seconds });
+    updateSearchParams(searchParams, [
+      (params) => setTimerSearchParams(params, milliseconds),
+    ]);
   }, [loading]);
 
   return (

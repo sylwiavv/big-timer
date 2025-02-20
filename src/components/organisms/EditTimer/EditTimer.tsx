@@ -1,19 +1,19 @@
 'use client';
 
 import { ETimerUnits } from '@/types/types';
-import { useSearchParams } from 'next/navigation';
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import { RefObject, useEffect, useState } from 'react';
 import {
-  convertSeconds,
-  convertToSeconds,
+  convertMilliseconds,
+  convertToMilliseconds,
 } from '../../../helpers/convert-seconds';
+import { setTargetIntoSearchParams } from '../../../helpers/set-target-search-params';
 import useCountdown from '../../../hooks/useCountDown';
 import { useTimerStore } from '../../../store/TimerStore';
 import { getSearchParamas } from '../../../utils/getSearchParams';
 import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
 import { Button } from '../../ui/button';
-import { handleSetTarget } from '../Timer/Timer';
 
 const InputsViarants = [
   { label: ETimerUnits.HOURS, value: 0 },
@@ -40,6 +40,17 @@ type TErrorTimer = {
   label: ETimerUnits | null;
 };
 
+export const updateSearchParams = (
+  searchParams: ReadonlyURLSearchParams,
+  updateFns: ((params: URLSearchParams) => void)[]
+) => {
+  const params = new URLSearchParams(searchParams.toString());
+
+  updateFns.forEach((updateFn) => updateFn(params)); // Wykonujemy wszystkie funkcje modyfikujące
+
+  window.history.pushState(null, '', `?${params.toString()}`); // Aktualizujemy URL
+};
+
 export const EditTimer = ({
   isEditingMode,
   setIsEditingMode,
@@ -48,7 +59,7 @@ export const EditTimer = ({
   setCurrentEditingUnit,
 }: IEditTimerProps) => {
   const searchParams = useSearchParams();
-  const { seconds, setSeconds } = useTimerStore();
+  const { milliseconds, setMili } = useTimerStore();
   const { start } = useCountdown();
 
   const [editTime, setEditTime] = useState(InputsViarants);
@@ -116,15 +127,14 @@ export const EditTimer = ({
     const seconds =
       editTime.find((item) => item.label === ETimerUnits.SECONDS)?.value || 0;
 
-    const convertedEditTime = convertToSeconds(hours, minutes, seconds);
+    const convertedEditTime = convertToMilliseconds(hours, minutes, seconds);
 
-    setTimerSearchParams({
-      searchParams,
-      seconds: convertedEditTime,
-      setSeconds,
-    });
+    updateSearchParams(searchParams, [
+      (params) => setTimerSearchParams(params, convertedEditTime),
+      (params) => setTargetIntoSearchParams(params, convertedEditTime),
+    ]);
 
-    handleSetTarget(searchParams, seconds);
+    setMili(convertedEditTime);
 
     start();
   };
@@ -148,14 +158,15 @@ export const EditTimer = ({
   }, [isEditingMode]);
 
   useEffect(() => {
-    getSearchParamas({ searchParams, setSeconds });
-    const { convertedHours, convertedMinutes, convertedSeconds } =
-      convertSeconds(seconds);
+    getSearchParamas({ searchParams, setMili });
+
+    const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
+      convertMilliseconds(milliseconds);
 
     setEditTime([
-      { label: ETimerUnits.HOURS, value: convertedHours },
-      { label: ETimerUnits.MINUTES, value: convertedMinutes },
-      { label: ETimerUnits.SECONDS, value: convertedSeconds },
+      { label: ETimerUnits.HOURS, value: convertedHoursM },
+      { label: ETimerUnits.MINUTES, value: convertedMinutesM },
+      { label: ETimerUnits.SECONDS, value: convertedSecondsM },
     ]);
   }, []);
 

@@ -1,1 +1,1 @@
-export const SIX_HOURS_IN_SECONDS = 21600;
+export const SIX_HOURS_IN_MILLISECONDS = 21600 * 1000;

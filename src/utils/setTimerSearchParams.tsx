@@ -1,41 +1,24 @@
-import { ReadonlyURLSearchParams } from 'next/navigation';
-import { convertSeconds } from '../helpers/convert-seconds';
-interface ITimerSearchParams {
-  searchParams: ReadonlyURLSearchParams;
-  seconds: number;
-  setSeconds?: (val: number) => void;
-}
-export const setTimerSearchParams = ({
-  searchParams,
-  seconds,
-  setSeconds,
-}: ITimerSearchParams) => {
-  const params = new URLSearchParams(searchParams.toString());
+import { convertMilliseconds } from '../helpers/convert-seconds';
 
-  const { convertedHours, convertedMinutes, convertedSeconds } =
-    convertSeconds(seconds);
+export const setTimerSearchParams = (
+  params: URLSearchParams,
+  milliseconds: number
+  // setMili?: (val: number) => void
+) => {
+  const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
+    convertMilliseconds(milliseconds);
 
-  if (convertedHours > 0) {
-    params.set('hour', convertedHours.toString());
-  } else {
-    params.delete('hour');
-  }
+  convertedHoursM > 0
+    ? params.set('hour', convertedHoursM.toString())
+    : params.delete('hour');
 
-  if (convertedMinutes > 0) {
-    params.set('minutes', convertedMinutes.toString());
-  } else {
-    params.delete('minutes');
-  }
+  convertedMinutesM > 0
+    ? params.set('minutes', convertedMinutesM.toString())
+    : params.delete('minutes');
 
-  if (convertedSeconds > 0) {
-    params.set('seconds', convertedSeconds.toString());
-  } else {
-    params.delete('seconds');
-  }
+  convertedSecondsM > 0
+    ? params.set('seconds', convertedSecondsM.toString())
+    : params.delete('seconds');
 
-  window.history.pushState(null, '', `?${params.toString()}`);
-
-  if (setSeconds) {
-    setSeconds(seconds);
-  }
+  // if (setMili) setMili(milliseconds);
 };

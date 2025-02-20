@@ -8,7 +8,7 @@ import { EditTimer } from '../organisms/EditTimer/EditTimer';
 import Timer from '../organisms/Timer/Timer';
 
 export const BigTimer = () => {
-  const { running, seconds } = useTimerStore();
+  const { running, milliseconds } = useTimerStore();
 
   const { pause } = useCountdown();
 
@@ -17,7 +17,7 @@ export const BigTimer = () => {
 
   const editTimerRef = useRef<HTMLDivElement>(null);
 
-  const emptyTimer = seconds === 0;
+  const emptyTimer = milliseconds === 0;
 
   // I think it should stay here because when timer is running after click on time the timer should stop, after second click edit timer componet should open
   const hadnleEditMode = (event: React.MouseEvent<HTMLDivElement>) => {

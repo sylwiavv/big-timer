@@ -16,24 +16,23 @@ export type TTimeInitialValues = {
 };
 
 interface ITimerState {
-  seconds: number;
   milliseconds: number;
   running: ERunning;
 
-  setSeconds: (value: number | ((prev: number) => number)) => void;
+  setMili: (value: number | ((prev: number) => number)) => void;
   toggleRunning: (running: ERunning) => void;
 }
 
 export const useTimerStore = create<ITimerState>()(
   persist(
     immer((set) => ({
-      seconds: 0,
       milliseconds: 0,
       running: ERunning.IDLE,
 
-      setSeconds: (value: number | ((prev: number) => number)) =>
+      setMili: (value: number | ((prev: number) => number)) =>
         set((state) => ({
-          seconds: typeof value === 'function' ? value(state.seconds) : value,
+          milliseconds:
+            typeof value === 'function' ? value(state.milliseconds) : value,
         })),
 
       toggleRunning: (running) =>
