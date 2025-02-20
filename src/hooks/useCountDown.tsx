@@ -5,19 +5,17 @@ import { getSearchParamas } from '../utils/getSearchParams';
 
 const useCountdown = () => {
   const searchParams = useSearchParams();
-  const { toggleRunning, setTime, running, seconds, setSeconds } =
-    useTimerStore();
+  const { toggleRunning, running, seconds, setSeconds } = useTimerStore();
 
   useEffect(() => {
     if (running !== ERunning.RUNNING || seconds <= 0) return;
 
     const interval = setInterval(() => {
-      setTime(-1);
+      setSeconds(-1);
     }, 1000);
 
     return () => clearInterval(interval);
-    // }, [seconds, running, setTime]);
-  }, [running, setTime]);
+  }, [running, setSeconds]);
 
   const start = () => toggleRunning(ERunning.RUNNING);
   const pause = () => {
