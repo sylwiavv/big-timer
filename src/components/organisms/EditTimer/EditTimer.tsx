@@ -103,9 +103,6 @@ export const EditTimer = ({
     );
   };
 
-  if (!error.error) {
-  }
-
   const handleSetStart = () => {
     hadnleEditMode(false);
 

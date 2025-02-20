@@ -6,8 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTimerStore } from '../store/TimerStore';
 import { getSearchParamas } from '../utils/getSearchParams';
 import { setTimerSearchParams } from '../utils/setTimerSearchParams';
-import { sixHoursInSeconds } from './constants/constants';
-
+import { SIX_HOURS_IN_SECONDS } from './constants/constants';
 const Home = () => {
   const [loading, setLoading] = useState(true);
   const searchParams = useSearchParams();
@@ -26,7 +25,7 @@ const Home = () => {
     }
 
     if (searchParams.size === 0 && !secondsFromLocalStorage) {
-      setSeconds(sixHoursInSeconds);
+      setSeconds(SIX_HOURS_IN_SECONDS);
       window.history.replaceState({}, '', `?hours=6`);
     }
     setLoading(false);

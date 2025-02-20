@@ -36,7 +36,6 @@ const Timer = ({ onClick }: ITimerProps) => {
 
     params.set('target', targetTime.toString());
 
-    console.log('test');
     window.history.pushState(null, '', `?${params.toString()}`);
 
     start();
@@ -44,16 +43,13 @@ const Timer = ({ onClick }: ITimerProps) => {
 
   useEffect(() => {
     const targetParam = searchParams.get('target');
-
     if (targetParam) {
       const targetTime = Number(targetParam);
       const currentTime = Math.floor(Date.now() / 1000);
       const remainingTime = Math.max(targetTime - currentTime, 0);
-
       setSeconds(remainingTime);
       if (remainingTime > 0) {
         toggleRunning(ERunning.RUNNING);
-        start();
       }
     }
   }, []);
@@ -76,6 +72,8 @@ const Timer = ({ onClick }: ITimerProps) => {
       setSeconds,
     });
   };
+
+  console.log(seconds, 'seconds');
 
   return (
     <div className="flex items-center gap-4 w-full">

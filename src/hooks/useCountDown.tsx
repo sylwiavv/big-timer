@@ -11,11 +11,11 @@ const useCountdown = () => {
     if (running !== ERunning.RUNNING || seconds <= 0) return;
 
     const interval = setInterval(() => {
-      setSeconds(-1);
+      setSeconds((prevSeconds: number) => Math.max(0, prevSeconds - 1));
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [running, setSeconds]);
+  }, [running]);
 
   const start = () => toggleRunning(ERunning.RUNNING);
   const pause = () => {
