@@ -3,7 +3,7 @@
 import { convertSeconds } from '@/helpers/convert-seconds';
 import { ETimerUnits } from '@/types/types';
 import { Minus, Plus } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import useCountdown from '../../../hooks/useCountDown';
 import { ERunning, useTimerStore } from '../../../store/TimerStore';
@@ -17,6 +17,19 @@ interface ITimerProps {
   onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
 }
 
+export const handleSetTarget = (
+  searchParams: ReadonlyURLSearchParams,
+  seconds: number
+) => {
+  const params = new URLSearchParams(searchParams.toString());
+
+  const targetTime = Math.floor(Date.now() / 1000) + seconds;
+
+  params.set('target', targetTime.toString());
+
+  window.history.pushState(null, '', `?${params.toString()}`);
+};
+
 const Timer = ({ onClick }: ITimerProps) => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
@@ -29,14 +42,7 @@ const Timer = ({ onClick }: ITimerProps) => {
   const { start, pause, restart } = useCountdown();
 
   const handleSetStart = () => {
-    toggleRunning(ERunning.RUNNING);
-    const params = new URLSearchParams(searchParams.toString());
-
-    const targetTime = Math.floor(Date.now() / 1000) + seconds;
-
-    params.set('target', targetTime.toString());
-
-    window.history.pushState(null, '', `?${params.toString()}`);
+    handleSetTarget(searchParams, seconds);
 
     start();
   };
@@ -56,7 +62,6 @@ const Timer = ({ onClick }: ITimerProps) => {
 
   const handleRestartMode = () => {
     restart();
-    toggleRunning(ERunning.IDLE);
   };
 
   const handleTimeChange = (type: 'plus' | 'minus') => {
@@ -93,7 +98,6 @@ const Timer = ({ onClick }: ITimerProps) => {
             className="font-semibold"
             onClick={() => {
               pause();
-              toggleRunning(ERunning.PAUSED);
 
               params.delete('target');
               window.history.pushState(null, '', `?${params.toString()}`);

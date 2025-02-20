@@ -13,6 +13,7 @@ import { getSearchParamas } from '../../../utils/getSearchParams';
 import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
 import { Button } from '../../ui/button';
+import { handleSetTarget } from '../Timer/Timer';
 
 const InputsViarants = [
   { label: ETimerUnits.HOURS, value: 0 },
@@ -122,6 +123,8 @@ export const EditTimer = ({
       seconds: convertedEditTime,
       setSeconds,
     });
+
+    handleSetTarget(searchParams, seconds);
 
     start();
   };
