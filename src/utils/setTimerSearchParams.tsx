@@ -3,7 +3,6 @@ import { convertMilliseconds } from '../helpers/convert-seconds';
 export const setTimerSearchParams = (
   params: URLSearchParams,
   milliseconds: number
-  // setMili?: (val: number) => void
 ) => {
   const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
     convertMilliseconds(milliseconds);
@@ -19,6 +18,4 @@ export const setTimerSearchParams = (
   convertedSecondsM > 0
     ? params.set('seconds', convertedSecondsM.toString())
     : params.delete('seconds');
-
-  // if (setMili) setMili(milliseconds);
 };

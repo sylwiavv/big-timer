@@ -47,9 +47,8 @@ export const updateSearchParams = (
 ) => {
   const params = new URLSearchParams(searchParams.toString());
 
-  updateFns.forEach((updateFn) => updateFn(params)); // Wykonujemy wszystkie funkcje modyfikujące
-
-  window.history.pushState(null, '', `?${params.toString()}`); // Aktualizujemy URL
+  updateFns.forEach((updateFn) => updateFn(params));
+  window.history.pushState(null, '', `?${params.toString()}`);
 };
 
 export const EditTimer = ({
