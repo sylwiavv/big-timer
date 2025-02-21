@@ -1,46 +1,41 @@
 'use client';
 
 import { BigTimer } from '@/components/templates/BigTimer';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { updateSearchParams } from '../components/organisms/EditTimer/EditTimer';
+import { useEffect } from 'react';
+import useUpdateSearchParams from '../hooks/useUpdateSearchParams';
 import { useTimerStore } from '../store/TimerStore';
-import { getSearchParamas } from '../utils/getSearchParams';
-import { setTimerSearchParams } from '../utils/setTimerSearchParams';
 import { SIX_HOURS_IN_MILLISECONDS } from './constants/constants';
 
 const Home = () => {
-  const [loading, setLoading] = useState(true);
-  const searchParams = useSearchParams();
+  const { updateSearchParams, getValuesFromSearchParams } =
+    useUpdateSearchParams();
 
-  const { milliseconds, setMili } = useTimerStore();
+  const { setMilliseconds } = useTimerStore();
 
   useEffect(() => {
-    if (!milliseconds) {
-      getSearchParamas({ searchParams, setMili });
-    }
-
+    const searchParamsValues = getValuesFromSearchParams();
     const storedTime = localStorage.getItem('timer-storage');
     const secondsFromLocalStorage = storedTime
-      ? JSON.parse(storedTime).state.seconds
+      ? JSON.parse(storedTime).state.milliseconds
       : null;
 
-    if (searchParams.size === 0 && !secondsFromLocalStorage) {
-      setMili(SIX_HOURS_IN_MILLISECONDS);
-      window.history.replaceState({}, '', `?hours=6`);
-    }
-    setLoading(false);
-  }, []);
+    if (searchParamsValues) {
+      const { hours, minutes, seconds, target } = searchParamsValues;
+      updateSearchParams({ hours, minutes, seconds, target });
+    } else if (secondsFromLocalStorage === 0) {
+      setMilliseconds(SIX_HOURS_IN_MILLISECONDS);
 
-  useEffect(() => {
-    updateSearchParams(searchParams, [
-      (params) => setTimerSearchParams(params, milliseconds),
-    ]);
-  }, [loading]);
+      updateSearchParams({ hours: 6 });
+    } else {
+      setMilliseconds(SIX_HOURS_IN_MILLISECONDS);
+
+      updateSearchParams({ hours: 6 });
+    }
+  }, []);
 
   return (
     <main className="flex items-center justify-center h-screen">
-      {loading ? <h1>loading</h1> : <BigTimer />}
+      <BigTimer />
     </main>
   );
 };

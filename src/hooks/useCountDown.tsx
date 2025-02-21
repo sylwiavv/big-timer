@@ -1,13 +1,19 @@
 import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { convertToMilliseconds } from '../helpers/convert-seconds';
 import { ERunning, useTimerStore } from '../store/TimerStore';
-import { getSearchParamas } from '../utils/getSearchParams';
+import useUpdateSearchParams from './useUpdateSearchParams';
 
 const useCountdown = () => {
   const searchParams = useSearchParams();
-  const { toggleRunning, milliseconds, running, setMili } = useTimerStore();
+  const params = new URLSearchParams(searchParams.toString());
+
+  const { toggleRunning, running, setMilliseconds } = useTimerStore();
+  const { updateSearchParams, getValuesFromSearchParams } =
+    useUpdateSearchParams();
+
   const [remainingTime, setRemainingTime] = useState(0);
-  const [animationFrameId, setAnimationFrameId] = useState<number | null>(null); // ID do anulowania animacji
+  const [animationFrameId, setAnimationFrameId] = useState<number | null>(null);
 
   useEffect(() => {
     const targetParam = searchParams.get('target');
@@ -24,7 +30,7 @@ const useCountdown = () => {
     const updateTimer = () => {
       const timeLeft = targetTime - Date.now();
       setRemainingTime(timeLeft > 0 ? timeLeft : 0);
-      setMili(timeLeft > 0 ? timeLeft : 0);
+      setMilliseconds(timeLeft > 0 ? timeLeft : 0);
 
       if (timeLeft > 0 && running === ERunning.RUNNING) {
         const id = requestAnimationFrame(updateTimer);
@@ -46,13 +52,24 @@ const useCountdown = () => {
   const start = () => toggleRunning(ERunning.RUNNING);
   const pause = () => {
     toggleRunning(ERunning.PAUSED);
+    params.delete('target');
+
     if (animationFrameId) {
       window.cancelAnimationFrame(animationFrameId);
     }
   };
   const restart = () => {
     toggleRunning(ERunning.IDLE);
-    getSearchParamas({ searchParams, setMili });
+
+    const searchParamsValues = getValuesFromSearchParams();
+
+    if (searchParamsValues) {
+      const { hours, minutes, seconds } = searchParamsValues;
+      updateSearchParams({ hours, minutes, seconds });
+
+      const milliseconds = convertToMilliseconds(hours, minutes, seconds);
+      setMilliseconds(milliseconds);
+    }
   };
 
   return { milliseconds: remainingTime, running, start, pause, restart };

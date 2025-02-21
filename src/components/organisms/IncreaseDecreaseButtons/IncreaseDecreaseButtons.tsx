@@ -1,15 +1,14 @@
 import { motion } from 'framer-motion';
 import { Minus, Plus } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
+import { convertMilliseconds } from '../../../helpers/convert-seconds';
+import useUpdateSearchParams from '../../../hooks/useUpdateSearchParams';
 import { useTimerStore } from '../../../store/TimerStore';
-import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import CircleButtonWithIcon from '../../atoms/CircleButton/CircleButton';
 import { ButtonsLayout } from '../../molecules/ButtonsLayout/ButtonsLayout';
-import { updateSearchParams } from '../EditTimer/EditTimer';
 
 const IncreaseDecreaseButtons: React.FC = () => {
-  const searchParams = useSearchParams();
-  const { milliseconds, setMili } = useTimerStore();
+  const { milliseconds, setMilliseconds } = useTimerStore();
+  const { updateSearchParams } = useUpdateSearchParams();
 
   const handleTimeChange = (type: 'plus' | 'minus') => {
     let value = milliseconds < 59000 ? 5000 : 15000;
@@ -18,11 +17,16 @@ const IncreaseDecreaseButtons: React.FC = () => {
 
     if (updatedMilliseconds < 0) return;
 
-    setMili(updatedMilliseconds);
+    const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
+      convertMilliseconds(milliseconds);
 
-    updateSearchParams(searchParams, [
-      (params) => setTimerSearchParams(params, milliseconds),
-    ]);
+    updateSearchParams({
+      hours: convertedHoursM,
+      minutes: convertedMinutesM,
+      seconds: convertedSecondsM,
+    });
+
+    setMilliseconds(updatedMilliseconds);
   };
 
   return (

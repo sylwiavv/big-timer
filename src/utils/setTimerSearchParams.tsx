@@ -8,8 +8,8 @@ export const setTimerSearchParams = (
     convertMilliseconds(milliseconds);
 
   convertedHoursM > 0
-    ? params.set('hour', convertedHoursM.toString())
-    : params.delete('hour');
+    ? params.set('hours', convertedHoursM.toString())
+    : params.delete('hours');
 
   convertedMinutesM > 0
     ? params.set('minutes', convertedMinutesM.toString())

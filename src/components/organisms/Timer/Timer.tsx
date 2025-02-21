@@ -17,7 +17,7 @@ interface ITimerProps {
 const Timer = ({ onClick }: ITimerProps) => {
   const searchParams = useSearchParams();
 
-  const { milliseconds, setMili } = useTimerStore();
+  const { milliseconds, setMilliseconds } = useTimerStore();
 
   const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
     convertMilliseconds(milliseconds);
@@ -33,7 +33,7 @@ const Timer = ({ onClick }: ITimerProps) => {
     const remainingTime = targetTime - Date.now();
 
     if (remainingTime > 0) {
-      setMili(remainingTime);
+      setMilliseconds(remainingTime);
       start();
     }
   }, []);

@@ -19,7 +19,7 @@ interface ITimerState {
   milliseconds: number;
   running: ERunning;
 
-  setMili: (value: number | ((prev: number) => number)) => void;
+  setMilliseconds: (value: number | ((prev: number) => number)) => void;
   toggleRunning: (running: ERunning) => void;
 }
 
@@ -29,7 +29,7 @@ export const useTimerStore = create<ITimerState>()(
       milliseconds: 0,
       running: ERunning.IDLE,
 
-      setMili: (value: number | ((prev: number) => number)) =>
+      setMilliseconds: (value: number | ((prev: number) => number)) =>
         set((state) => ({
           milliseconds:
             typeof value === 'function' ? value(state.milliseconds) : value,

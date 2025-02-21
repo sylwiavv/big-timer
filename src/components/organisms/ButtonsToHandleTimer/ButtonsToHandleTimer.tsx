@@ -1,29 +1,36 @@
 import { useSearchParams } from 'next/navigation';
-import { setTargetIntoSearchParams } from '../../../helpers/set-target-search-params';
 import useCountdown from '../../../hooks/useCountDown';
+import useUpdateSearchParams from '../../../hooks/useUpdateSearchParams';
 import { ERunning, useTimerStore } from '../../../store/TimerStore';
 import { ButtonsLayout } from '../../molecules/ButtonsLayout/ButtonsLayout';
 import { Button } from '../../ui/button';
-import { updateSearchParams } from '../EditTimer/EditTimer';
 
 const ButtonsToHandleTimer = () => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
+  const { updateSearchParams } = useUpdateSearchParams();
 
   const { milliseconds, running } = useTimerStore();
   const { start, pause, restart } = useCountdown();
 
   const handleSetStart = () => {
-    const targetTime = Date.now() + milliseconds;
+    const target = Date.now() + milliseconds;
 
-    updateSearchParams(searchParams, [
-      (params) => setTargetIntoSearchParams(params, targetTime),
-    ]);
+    const hours = Number(params.get('hours')) || 0;
+    const minutes = Number(params.get('minutes')) || 0;
+    const seconds = Number(params.get('seconds')) || 0;
+
+    updateSearchParams({ hours, minutes, seconds, target });
+
     start();
   };
 
   const handleRestartMode = () => {
     restart();
+  };
+
+  const handleSetPause = () => {
+    pause();
   };
 
   return (
@@ -39,15 +46,7 @@ const ButtonsToHandleTimer = () => {
           </Button>
         </>
       ) : (
-        <Button
-          className="font-semibold"
-          onClick={() => {
-            pause();
-
-            params.delete('target');
-            window.history.pushState(null, '', `?${params.toString()}`);
-          }}
-        >
+        <Button className="font-semibold" onClick={handleSetPause}>
           Pause
         </Button>
       )}

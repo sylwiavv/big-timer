@@ -1,18 +1,15 @@
 'use client';
 
 import { ETimerUnits } from '@/types/types';
-import { ReadonlyURLSearchParams, useSearchParams } from 'next/navigation';
 import { RefObject, useEffect, useState } from 'react';
 import {
   convertMilliseconds,
   convertToMilliseconds,
 } from '../../../helpers/convert-seconds';
 import getValueForUnit from '../../../helpers/get-value-for-unit';
-import { setTargetIntoSearchParams } from '../../../helpers/set-target-search-params';
 import useCountdown from '../../../hooks/useCountDown';
+import useUpdateSearchParams from '../../../hooks/useUpdateSearchParams';
 import { useTimerStore } from '../../../store/TimerStore';
-import { getSearchParamas } from '../../../utils/getSearchParams';
-import { setTimerSearchParams } from '../../../utils/setTimerSearchParams';
 import LabelWithInput from '../../atoms/LabelWithInput/LabelWithInput';
 import { Button } from '../../ui/button';
 
@@ -41,16 +38,6 @@ type TErrorTimer = {
   label: ETimerUnits | null;
 };
 
-export const updateSearchParams = (
-  searchParams: ReadonlyURLSearchParams,
-  updateFns: ((params: URLSearchParams) => void)[]
-) => {
-  const params = new URLSearchParams(searchParams.toString());
-
-  updateFns.forEach((updateFn) => updateFn(params));
-  window.history.pushState(null, '', `?${params.toString()}`);
-};
-
 export const EditTimer = ({
   isEditingMode,
   setIsEditingMode,
@@ -58,11 +45,19 @@ export const EditTimer = ({
   currentEditingUnit,
   setCurrentEditingUnit,
 }: IEditTimerProps) => {
-  const searchParams = useSearchParams();
-  const { milliseconds, setMili } = useTimerStore();
+  const { updateSearchParams } = useUpdateSearchParams();
+
+  const { milliseconds, setMilliseconds } = useTimerStore();
   const { start } = useCountdown();
 
-  const [editTime, setEditTime] = useState(InputsViarants);
+  const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
+    convertMilliseconds(milliseconds);
+
+  const [editTime, setEditTime] = useState([
+    { label: ETimerUnits.HOURS, value: convertedHoursM },
+    { label: ETimerUnits.MINUTES, value: convertedMinutesM },
+    { label: ETimerUnits.SECONDS, value: convertedSecondsM },
+  ]);
 
   const [error, setError] = useState<TErrorTimer>({
     error: false,
@@ -78,6 +73,10 @@ export const EditTimer = ({
       error: true,
       label: unit,
     });
+  };
+
+  const handleOnClick = (label: ETimerUnits) => {
+    setCurrentEditingUnit(label);
   };
 
   const handleEdit = (
@@ -111,28 +110,6 @@ export const EditTimer = ({
     );
   };
 
-  const handleSetStart = () => {
-    setIsEditingMode(false);
-
-    if (error.error) return;
-
-    const hours = getValueForUnit(ETimerUnits.HOURS, editTime);
-    const minutes = getValueForUnit(ETimerUnits.MINUTES, editTime);
-    const seconds = getValueForUnit(ETimerUnits.SECONDS, editTime);
-
-    const convertedEditTime = convertToMilliseconds(hours, minutes, seconds);
-    const targetTimestamp = Date.now() + convertedEditTime;
-
-    updateSearchParams(searchParams, [
-      (params) => setTimerSearchParams(params, convertedEditTime),
-      (params) => setTargetIntoSearchParams(params, targetTimestamp),
-    ]);
-
-    setMili(convertedEditTime);
-
-    start();
-  };
-
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
@@ -151,21 +128,22 @@ export const EditTimer = ({
     };
   }, [isEditingMode]);
 
-  useEffect(() => {
-    getSearchParamas({ searchParams, setMili });
+  const handleSetStart = () => {
+    setIsEditingMode(false);
 
-    const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
-      convertMilliseconds(milliseconds);
+    if (error.error) return;
 
-    setEditTime([
-      { label: ETimerUnits.HOURS, value: convertedHoursM },
-      { label: ETimerUnits.MINUTES, value: convertedMinutesM },
-      { label: ETimerUnits.SECONDS, value: convertedSecondsM },
-    ]);
-  }, []);
+    const hours = getValueForUnit(ETimerUnits.HOURS, editTime);
+    const minutes = getValueForUnit(ETimerUnits.MINUTES, editTime);
+    const seconds = getValueForUnit(ETimerUnits.SECONDS, editTime);
 
-  const handleOnClick = (label: ETimerUnits) => {
-    setCurrentEditingUnit(label);
+    const convertedEditTime = convertToMilliseconds(hours, minutes, seconds);
+    const target = Date.now() + convertedEditTime;
+
+    updateSearchParams({ hours, minutes, seconds, target });
+    setMilliseconds(convertedEditTime);
+
+    start();
   };
 
   return (
