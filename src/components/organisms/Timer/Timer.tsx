@@ -23,32 +23,32 @@ const Timer = ({ onClick }: ITimerProps) => {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams.toString());
 
-  const { toggleRunning, running, milliseconds, setMili } = useTimerStore();
+  const { running, milliseconds, setMili } = useTimerStore();
 
   const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
     convertMilliseconds(milliseconds);
 
   const { start, pause, restart } = useCountdown();
+  const targetTime = Date.now() + milliseconds;
 
   const handleSetStart = () => {
     updateSearchParams(searchParams, [
-      // (params) => setTimerSearchParams(params, milliseconds),
-      (params) => setTargetIntoSearchParams(params, milliseconds),
+      (params) => setTargetIntoSearchParams(params, targetTime),
     ]);
     start();
   };
 
   useEffect(() => {
     const targetParam = searchParams.get('target');
-    if (targetParam) {
-      const targetTime = Number(targetParam);
-      const currentTime = Date.now();
-      const remainingTime = targetTime - currentTime;
 
-      if (remainingTime > 0) {
-        // setMili(remainingTime);
-        toggleRunning(ERunning.RUNNING);
-      }
+    if (!targetParam) return;
+
+    const targetTime = parseInt(targetParam, 10);
+    const remainingTime = targetTime - Date.now();
+
+    if (remainingTime > 0) {
+      setMili(remainingTime);
+      start();
     }
   }, []);
 

@@ -128,10 +128,11 @@ export const EditTimer = ({
       editTime.find((item) => item.label === ETimerUnits.SECONDS)?.value || 0;
 
     const convertedEditTime = convertToMilliseconds(hours, minutes, seconds);
+    const targetTimestamp = Date.now() + convertedEditTime;
 
     updateSearchParams(searchParams, [
       (params) => setTimerSearchParams(params, convertedEditTime),
-      (params) => setTargetIntoSearchParams(params, convertedEditTime),
+      (params) => setTargetIntoSearchParams(params, targetTimestamp),
     ]);
 
     setMili(convertedEditTime);

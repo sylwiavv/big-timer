@@ -1,34 +1,42 @@
 import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ERunning, useTimerStore } from '../store/TimerStore';
 import { getSearchParamas } from '../utils/getSearchParams';
 
 const useCountdown = () => {
   const searchParams = useSearchParams();
-  const { toggleRunning, running, milliseconds, setMili } = useTimerStore();
+  const { toggleRunning, running, setMili } = useTimerStore();
+  const [remainingTime, setRemainingTime] = useState(0);
 
   useEffect(() => {
-    if (running !== ERunning.RUNNING || milliseconds <= 0) return;
+    const targetParam = searchParams.get('target');
+    if (!targetParam) return;
 
-    const interval = setInterval(() => {
-      setMili((prevMilliseconds: number) =>
-        Math.max(0, prevMilliseconds - 1000)
-      );
-    }, 1000);
+    const targetTime = parseInt(targetParam, 10);
 
-    return () => clearInterval(interval);
-  }, [running]);
+    const updateTimer = () => {
+      const timeLeft = targetTime - Date.now();
+      setRemainingTime(timeLeft > 0 ? timeLeft : 0);
+      setMili(timeLeft > 0 ? timeLeft : 0);
+
+      if (timeLeft > 0) {
+        requestAnimationFrame(updateTimer);
+      } else {
+        toggleRunning(ERunning.IDLE);
+      }
+    };
+
+    updateTimer();
+  }, [searchParams]);
 
   const start = () => toggleRunning(ERunning.RUNNING);
-  const pause = () => {
-    toggleRunning(ERunning.PAUSED);
-  };
+  const pause = () => toggleRunning(ERunning.PAUSED);
   const restart = () => {
     toggleRunning(ERunning.IDLE);
     getSearchParamas({ searchParams, setMili });
   };
 
-  return { milliseconds, running, start, pause, restart };
+  return { milliseconds: remainingTime, running, start, pause, restart };
 };
 
 export default useCountdown;
