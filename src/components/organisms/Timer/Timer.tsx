@@ -1,85 +1,55 @@
 'use client';
 
-import { Minus, Plus } from 'lucide-react';
-import { convertSeconds } from '../../../helpers/convert-seconds';
+import { convertMilliseconds } from '@/helpers/convert-seconds';
+import { ETimerUnits } from '@/types/types';
+import { useSearchParams } from 'next/navigation';
+import { useEffect } from 'react';
 import useCountdown from '../../../hooks/useCountDown';
-import { ERunning, useTimerStore } from '../../../store/TimerStore';
-import { ETimerUnits } from '../../../types/types';
-import CircleButtonWithIcon from '../../atoms/CircleButton/CircleButton';
+import { useTimerStore } from '../../../store/TimerStore';
 import TimerUnit from '../../atoms/TimerUnit/TimerUnit';
-import { ButtonsLayout } from '../../molecules/ButtonsLayout/ButtonsLayout';
-import { Button } from '../../ui/button';
+import ButtonsToHandleTimer from '../ButtonsToHandleTimer/ButtonsToHandleTimer';
+import IncreaseDecreaseButtons from '../IncreaseDecreaseButtons/IncreaseDecreaseButtons';
 
-const Timer = () => {
-  const { reset, toggleRunning, setTime, running, seconds } = useTimerStore();
+interface ITimerProps {
+  onClick: (event: React.MouseEvent<HTMLDivElement>) => void;
+}
 
-  const emptyTimer = seconds === 0;
+const Timer = ({ onClick }: ITimerProps) => {
+  const searchParams = useSearchParams();
 
-  const { convertedSeconds, convertedMinutes, convertedHours } =
-    convertSeconds(seconds);
+  const { milliseconds, setMili } = useTimerStore();
 
-  const { start, pause, restart } = useCountdown({
-    seconds,
-    running: running === 'running',
-    setTime,
-    toggleRunning: (state) =>
-      toggleRunning(state ? ERunning.RUNNING : ERunning.PAUSED),
-    reset,
-  });
+  const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
+    convertMilliseconds(milliseconds);
 
-  console.log(seconds, 'SECONDS');
+  const { start } = useCountdown();
+
+  useEffect(() => {
+    const targetParam = searchParams.get('target');
+
+    if (!targetParam) return;
+
+    const targetTime = parseInt(targetParam, 10);
+    const remainingTime = targetTime - Date.now();
+
+    if (remainingTime > 0) {
+      setMili(remainingTime);
+      start();
+    }
+  }, []);
 
   return (
-    <>
-      {!emptyTimer && (
-        <ButtonsLayout>
-          <Button
-            className="font-semibold"
-            // onClick={() =>
-            //   toggleRunning(
-            //     running === ERunning.RUNNING
-            //       ? ERunning.PAUSED
-            //       : ERunning.RUNNING
-            //   )
-            // }
-            onClick={start}
-          >
-            Start
-          </Button>
-          <Button
-            className="font-semibold"
-            // onClick={() =>
-            //   toggleRunning(
-            //     running === ERunning.RUNNING
-            //       ? ERunning.PAUSED
-            //       : ERunning.RUNNING
-            //   )
-            // }
-            onClick={pause}
-          >
-            Pause
-          </Button>
+    <div className="flex items-center gap-4 w-full">
+      <ButtonsToHandleTimer />
 
-          {running === ERunning.RUNNING && (
-            <Button className="font-semibold" onClick={restart}>
-              Reset
-            </Button>
-          )}
-        </ButtonsLayout>
-      )}
-
-      <div className="flex items-center justify-center">
-        {/* {hours > 0 && <TimerUnit time={hours} unit={ETimerUnits.HOURS} />} */}
-        {<TimerUnit time={convertedHours} unit={ETimerUnits.HOURS} />}
-        <TimerUnit time={convertedMinutes} unit={ETimerUnits.MINUTES} />
-        <TimerUnit time={convertedSeconds} unit={ETimerUnits.SECONDS} />
+      <div className="flex w-full justify-center" onClick={onClick}>
+        <TimerUnit time={convertedHoursM} unit={ETimerUnits.HOURS} />
+        <TimerUnit time={convertedMinutesM} unit={ETimerUnits.MINUTES} />
+        <TimerUnit time={convertedSecondsM} unit={ETimerUnits.SECONDS} />
       </div>
 
-      <ButtonsLayout>
-        <CircleButtonWithIcon icon={<Plus />} onClick={() => setTime(5)} />
-        <CircleButtonWithIcon icon={<Minus />} onClick={() => setTime(-5)} />
-      </ButtonsLayout>
-    </>
+      <IncreaseDecreaseButtons />
+    </div>
   );
 };
 export default Timer;

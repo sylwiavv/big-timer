@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontSize: {
+        timerXl: '14rem',
+      },
       fontFamily: {
         sans: [
           'ui-sans-serif',

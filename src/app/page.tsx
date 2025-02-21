@@ -1,19 +1,48 @@
 'use client';
 
-import { useState } from 'react';
-import Timer from '../components/organisms/Timer/Timer';
+import { BigTimer } from '@/components/templates/BigTimer';
+import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { updateSearchParams } from '../components/organisms/EditTimer/EditTimer';
+import { useTimerStore } from '../store/TimerStore';
+import { getSearchParamas } from '../utils/getSearchParams';
+import { setTimerSearchParams } from '../utils/setTimerSearchParams';
+import { SIX_HOURS_IN_MILLISECONDS } from './constants/constants';
 
-export default function Home() {
-  const [isEditingMode, setIsEditingMode] = useState(false);
+const Home = () => {
+  const [loading, setLoading] = useState(true);
+  const searchParams = useSearchParams();
+
+  const { milliseconds, setMili } = useTimerStore();
+
+  useEffect(() => {
+    if (!milliseconds) {
+      getSearchParamas({ searchParams, setMili });
+    }
+
+    const storedTime = localStorage.getItem('timer-storage');
+    const secondsFromLocalStorage = storedTime
+      ? JSON.parse(storedTime).state.seconds
+      : null;
+
+    if (searchParams.size === 0 && !secondsFromLocalStorage) {
+      setMili(SIX_HOURS_IN_MILLISECONDS);
+      window.history.replaceState({}, '', `?hours=6`);
+    }
+    setLoading(false);
+  }, []);
+
+  useEffect(() => {
+    updateSearchParams(searchParams, [
+      (params) => setTimerSearchParams(params, milliseconds),
+    ]);
+  }, [loading]);
+
   return (
-    <main className="flex flex-col gap-4 items-center justify-center h-screen">
-      <div
-        className="flex gap-4 items-center justify-center"
-        // onClick={() => setIsEditingMode(!isEditingMode)}
-      >
-        <Timer />
-        {/* {isEditingMode ? <EditTimer /> : <Timer />} */}
-      </div>
+    <main className="flex items-center justify-center h-screen">
+      {loading ? <h1>loading</h1> : <BigTimer />}
     </main>
   );
-}
+};
+
+export default Home;

@@ -1,7 +1,7 @@
 'use client';
 
 export enum ETimerUnits {
-  SECONDS = 'Seconds',
-  MINUTES = 'Minutes',
-  HOURS = 'Hours',
+  HOURS = 'hours',
+  MINUTES = 'minutes',
+  SECONDS = 'seconds',
 }
