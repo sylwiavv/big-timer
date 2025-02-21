@@ -7,6 +7,7 @@ import {
   convertMilliseconds,
   convertToMilliseconds,
 } from '../../../helpers/convert-seconds';
+import getValueForUnit from '../../../helpers/get-value-for-unit';
 import { setTargetIntoSearchParams } from '../../../helpers/set-target-search-params';
 import useCountdown from '../../../hooks/useCountDown';
 import { useTimerStore } from '../../../store/TimerStore';
@@ -80,20 +81,16 @@ export const EditTimer = ({
     });
   };
 
-  const hadnleEditMode = (value: boolean) => {
-    setIsEditingMode(value);
-  };
-
   const handleEdit = (
     e: React.ChangeEvent<HTMLInputElement>,
     label: ETimerUnits
   ) => {
-    let value = e.target.value;
-    if (value.length > 2) {
-      value = value.slice(-2);
-    }
+    const value = e.target.value;
 
-    const numericValue = Number(value);
+    const truncatedValue = value.length > 2 ? value.slice(-2) : value;
+
+    const numericValue = Number(truncatedValue);
+
     if (numericValue > MAX_VALUES[label]) {
       handleSetError(label);
 
@@ -116,16 +113,13 @@ export const EditTimer = ({
   };
 
   const handleSetStart = () => {
-    hadnleEditMode(false);
+    setIsEditingMode(false);
 
     if (error.error) return;
 
-    const hours =
-      editTime.find((item) => item.label === ETimerUnits.HOURS)?.value || 0;
-    const minutes =
-      editTime.find((item) => item.label === ETimerUnits.MINUTES)?.value || 0;
-    const seconds =
-      editTime.find((item) => item.label === ETimerUnits.SECONDS)?.value || 0;
+    const hours = getValueForUnit(ETimerUnits.HOURS, editTime);
+    const minutes = getValueForUnit(ETimerUnits.MINUTES, editTime);
+    const seconds = getValueForUnit(ETimerUnits.SECONDS, editTime);
 
     const convertedEditTime = convertToMilliseconds(hours, minutes, seconds);
     const targetTimestamp = Date.now() + convertedEditTime;
@@ -143,7 +137,7 @@ export const EditTimer = ({
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (ref.current && !ref.current.contains(event.target as Node)) {
-        hadnleEditMode(false);
+        setIsEditingMode(false);
       }
     };
 

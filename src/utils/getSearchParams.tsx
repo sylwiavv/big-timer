@@ -6,10 +6,6 @@ interface IGetSearchParamasProps {
   setMili?: (value: number) => void;
 }
 
-const calculateTargetTimestamp = (durationMs: number) => {
-  return Date.now() + durationMs;
-};
-
 export const getSearchParamas = ({
   searchParams,
   setMili,
@@ -29,14 +25,6 @@ export const getSearchParamas = ({
   );
 
   if (!setMili) return;
-  // const targetParam = searchParams.get('target');
-  //
-  // if (targetParam) {
-  //   setMili(calculateTargetTimestamp(+targetParam));
-  // } else {
-  //   setMili && setMili(miilli);
-  // }
-  // setMili && setMili(miilli);
 
-  // }
+  setMili && setMili(miilli);
 };
