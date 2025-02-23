@@ -6,7 +6,6 @@ import useUpdateSearchParams from './useUpdateSearchParams';
 
 const useCountdown = () => {
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
 
   const { toggleRunning, running, setMilliseconds } = useTimerStore();
   const { updateSearchParams, getValuesFromSearchParams } =
@@ -50,14 +49,23 @@ const useCountdown = () => {
   }, [running, searchParams]);
 
   const start = () => toggleRunning(ERunning.RUNNING);
+
   const pause = () => {
     toggleRunning(ERunning.PAUSED);
-    params.delete('target');
+
+    const searchParamsValues = getValuesFromSearchParams();
+
+    if (searchParamsValues) {
+      const { hours, minutes, seconds } = searchParamsValues;
+      updateSearchParams({ hours, minutes, seconds, target: 0 });
+    }
 
     if (animationFrameId) {
-      window.cancelAnimationFrame(animationFrameId);
+      cancelAnimationFrame(animationFrameId);
+      setAnimationFrameId(null);
     }
   };
+
   const restart = () => {
     toggleRunning(ERunning.IDLE);
 

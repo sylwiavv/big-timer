@@ -11,22 +11,24 @@ const IncreaseDecreaseButtons: React.FC = () => {
   const { updateSearchParams } = useUpdateSearchParams();
 
   const handleTimeChange = (type: 'plus' | 'minus') => {
-    let value = milliseconds < 59000 ? 5000 : 15000;
-    let valueToHandle = type === 'plus' ? value : -value;
-    let updatedMilliseconds = milliseconds + valueToHandle;
+    const value = milliseconds < 59000 ? 5000 : 15000;
+    const valueToHandle = type === 'plus' ? value : -value;
 
-    if (updatedMilliseconds < 0) return;
+    setMilliseconds((prevMilliseconds) => {
+      const updatedMilliseconds = prevMilliseconds + valueToHandle;
+      if (updatedMilliseconds < 0) return prevMilliseconds;
 
-    const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
-      convertMilliseconds(milliseconds);
+      const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
+        convertMilliseconds(updatedMilliseconds);
 
-    updateSearchParams({
-      hours: convertedHoursM,
-      minutes: convertedMinutesM,
-      seconds: convertedSecondsM,
+      updateSearchParams({
+        hours: convertedHoursM,
+        minutes: convertedMinutesM,
+        seconds: convertedSecondsM,
+      });
+
+      return updatedMilliseconds;
     });
-
-    setMilliseconds(updatedMilliseconds);
   };
 
   return (
