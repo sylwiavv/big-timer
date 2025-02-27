@@ -25,7 +25,7 @@ const LabelWithInput = ({
       <div className="flex items-center leading-[.90]">
         <input
           pattern="[0-9]*"
-          className={`bg-transparent font-semibold appearance-textfield w-[1.200em] p-0 text-right text-timerXl border-0 outline-none rounded-lg pr-2 focus:bg-yellow-200 transition-all duration-300 ${className}`}
+          className={`bg-transparent font-semibold appearance-textfield w-[1.400em] p-0 text-right text-timerXl border-0 outline-none rounded-lg pr-2 focus:bg-yellow-200 transition-all duration-300 ${className}`}
           value={label !== ETimerUnits.HOURS ? formatTime(+value) : value}
           onChange={onChange}
           onClick={onClick}

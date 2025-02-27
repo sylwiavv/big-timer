@@ -1,10 +1,7 @@
 'use client';
 
 import { convertMilliseconds } from '@/helpers/convert-seconds';
-import { ESearchParams, ETimerUnits } from '@/types/types';
-import { useSearchParams } from 'next/navigation';
-import { useEffect } from 'react';
-import useCountdown from '../../../hooks/useCountDown';
+import { ETimerUnits } from '@/types/types';
 import { useTimerStore } from '../../../store/TimerStore';
 import TimerUnit from '../../atoms/TimerUnit/TimerUnit';
 import ButtonsToHandleTimer from '../ButtonsToHandleTimer/ButtonsToHandleTimer';
@@ -15,31 +12,13 @@ interface ITimerProps {
 }
 
 const Timer = ({ onClick }: ITimerProps) => {
-  const searchParams = useSearchParams();
-  const { start } = useCountdown();
-
-  const { milliseconds, setMilliseconds } = useTimerStore();
+  const { milliseconds } = useTimerStore();
 
   const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
     convertMilliseconds(milliseconds);
 
-  // useEffect ?
-  useEffect(() => {
-    const targetParam = searchParams.get(ESearchParams.TARGET);
-
-    if (!targetParam) return;
-
-    const targetTime = parseInt(targetParam, 10);
-    const remainingTime = targetTime - Date.now();
-
-    if (remainingTime > 0) {
-      setMilliseconds(remainingTime);
-      start();
-    }
-  }, []);
-
   return (
-    <div className="flex items-center gap-4 w-full">
+    <div className="flex items-center gap-4 w-full hover:cursor-pointer">
       <ButtonsToHandleTimer />
 
       <div className="flex w-full justify-center" onClick={onClick}>

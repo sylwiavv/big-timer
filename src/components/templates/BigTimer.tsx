@@ -26,13 +26,12 @@ export const BigTimer = () => {
       pause();
     } else {
       setIsEditingMode(true);
+      const target = event.target as HTMLElement;
+      const unit = target.dataset.unit;
+      if (!unit) return;
+
+      setCurrentEditingUnit(unit as ETimerUnits);
     }
-
-    const target = event.target as HTMLElement;
-    const unit = target.dataset.unit;
-
-    if (!unit) return;
-    setCurrentEditingUnit(unit as ETimerUnits);
   };
 
   return (

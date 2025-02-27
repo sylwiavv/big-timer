@@ -1,7 +1,7 @@
 'use client';
 
 import { ETimerUnits, TErrorTimer } from '@/types/types';
-import { RefObject, useEffect, useState } from 'react';
+import { RefObject, useEffect, useRef, useState } from 'react';
 import { TIMER_MAX_VALUES } from '../../../app/constants/constants';
 import {
   convertMilliseconds,
@@ -69,20 +69,26 @@ export const EditTimer = ({
     setCurrentEditingUnit(label);
   };
 
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleEdit = (
     e: React.ChangeEvent<HTMLInputElement>,
     label: ETimerUnits
   ) => {
     const value = e.target.value;
-
     const truncatedValue = value.length > 2 ? value.slice(-2) : value;
-
     const numericValue = Number(truncatedValue);
+
+    if (timeoutRef.current) {
+      handleResetError();
+
+      clearTimeout(timeoutRef.current);
+    }
 
     if (numericValue > TIMER_MAX_VALUES[label]) {
       handleSetError(label);
 
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         setEditTime((prevState) =>
           prevState.map((item) =>
             item.label === label
@@ -90,7 +96,8 @@ export const EditTimer = ({
               : item
           )
         );
-      }, 2500);
+        handleResetError();
+      }, 2000);
     } else {
       handleResetError();
     }
@@ -121,9 +128,9 @@ export const EditTimer = ({
   }, [isEditingMode]);
 
   const handleSetStart = () => {
-    setIsEditingMode(false);
-
     if (error.error) return;
+
+    setIsEditingMode(false);
 
     const hours = getValueForUnit(ETimerUnits.HOURS, editTime);
     const minutes = getValueForUnit(ETimerUnits.MINUTES, editTime);

@@ -2,6 +2,8 @@
 
 import { BigTimer } from '@/components/templates/BigTimer';
 import { useEffect } from 'react';
+import { convertToMilliseconds } from '../helpers/convert-seconds';
+import useCountdown from '../hooks/useCountDown';
 import useUpdateSearchParams from '../hooks/useUpdateSearchParams';
 import { useTimerStore } from '../store/TimerStore';
 import { SIX_HOURS_IN_MILLISECONDS } from './constants/constants';
@@ -11,6 +13,7 @@ const Home = () => {
     useUpdateSearchParams();
 
   const { setMilliseconds } = useTimerStore();
+  const { start } = useCountdown();
 
   useEffect(() => {
     const searchParamsValues = getValuesFromSearchParams();
@@ -21,11 +24,22 @@ const Home = () => {
 
     if (searchParamsValues) {
       const { hours, minutes, seconds, target } = searchParamsValues;
-      updateSearchParams({ hours, minutes, seconds, target });
-    } else if (secondsFromLocalStorage === 0) {
-      setMilliseconds(SIX_HOURS_IN_MILLISECONDS);
+      const totalMilliseconds = convertToMilliseconds(hours, minutes, seconds);
+      setMilliseconds(totalMilliseconds);
 
-      updateSearchParams({ hours: 6 });
+      if (target) {
+        if (!target) return;
+
+        const targetTime = parseInt(target.toString(), 10);
+        const remainingTime = targetTime - Date.now();
+
+        if (remainingTime) {
+          setMilliseconds(remainingTime);
+
+          start();
+        }
+      }
+      //TODO: change a logic
     } else {
       setMilliseconds(SIX_HOURS_IN_MILLISECONDS);
 

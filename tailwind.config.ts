@@ -10,7 +10,7 @@ export default {
   theme: {
     extend: {
       fontSize: {
-        timerXl: '14rem',
+        timerXl: '10rem',
       },
       fontFamily: {
         sans: [
