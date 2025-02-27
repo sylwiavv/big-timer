@@ -19,7 +19,8 @@ export const BigTimer = () => {
 
   const emptyTimer = milliseconds === 0;
 
-  // I think it should stay here because when timer is running after click on time the timer should stop, after second click edit timer componet should open
+  // I think it should stay here because when timer is running after click on time the timer should stop,
+  //  after second click edit timer componet should open
   const hadnleEditMode = (event: React.MouseEvent<HTMLDivElement>) => {
     if (running === ERunning.RUNNING) {
       pause();

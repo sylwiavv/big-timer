@@ -1,7 +1,7 @@
 'use client';
 
 import { convertMilliseconds } from '@/helpers/convert-seconds';
-import { ETimerUnits } from '@/types/types';
+import { ESearchParams, ETimerUnits } from '@/types/types';
 import { useSearchParams } from 'next/navigation';
 import { useEffect } from 'react';
 import useCountdown from '../../../hooks/useCountDown';
@@ -16,16 +16,16 @@ interface ITimerProps {
 
 const Timer = ({ onClick }: ITimerProps) => {
   const searchParams = useSearchParams();
+  const { start } = useCountdown();
 
   const { milliseconds, setMilliseconds } = useTimerStore();
 
   const { convertedHoursM, convertedMinutesM, convertedSecondsM } =
     convertMilliseconds(milliseconds);
 
-  const { start } = useCountdown();
-
+  // useEffect ?
   useEffect(() => {
-    const targetParam = searchParams.get('target');
+    const targetParam = searchParams.get(ESearchParams.TARGET);
 
     if (!targetParam) return;
 

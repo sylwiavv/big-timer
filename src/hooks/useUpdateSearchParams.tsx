@@ -1,4 +1,5 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { ESearchParams, ETimerUnits } from '../types/types';
 
 interface ISearchParamsProps {
   hours: number;
@@ -20,17 +21,21 @@ const useUpdateSearchParams = () => {
     seconds,
     target,
   }: ISearchParamsProps) => {
-    hours > 0 ? params.set('hours', hours.toString()) : params.delete('hours');
+    hours > 0
+      ? params.set(ETimerUnits.HOURS, hours.toString())
+      : params.delete(ETimerUnits.HOURS);
 
     minutes && minutes > 0
-      ? params.set('minutes', minutes.toString())
-      : params.delete('minutes');
+      ? params.set(ETimerUnits.MINUTES, minutes.toString())
+      : params.delete(ETimerUnits.MINUTES);
 
     seconds && seconds > 0
-      ? params.set('seconds', seconds.toString())
-      : params.delete('seconds');
+      ? params.set(ETimerUnits.SECONDS, seconds.toString())
+      : params.delete(ETimerUnits.SECONDS);
 
-    target ? params.set('target', target.toString()) : params.delete('target');
+    target
+      ? params.set(ESearchParams.TARGET, target.toString())
+      : params.delete(ESearchParams.TARGET);
 
     router.push(`${pathname}?${params.toString()}`);
   };
@@ -39,10 +44,12 @@ const useUpdateSearchParams = () => {
     if (params.size === 0) return null;
 
     return {
-      hours: Number(params.get('hours')) || 0,
-      minutes: Number(params.get('minutes')) || 0,
-      seconds: Number(params.get('seconds')) || 0,
-      target: params.has('target') ? Number(params.get('target')) : undefined,
+      hours: Number(params.get(ETimerUnits.HOURS)) || 0,
+      minutes: Number(params.get(ETimerUnits.MINUTES)) || 0,
+      seconds: Number(params.get(ETimerUnits.SECONDS)) || 0,
+      target: params.has(ESearchParams.TARGET)
+        ? Number(params.get(ESearchParams.TARGET))
+        : undefined,
     };
   };
 

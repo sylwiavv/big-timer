@@ -1,7 +1,8 @@
 'use client';
 
-import { ETimerUnits } from '@/types/types';
+import { ETimerUnits, TErrorTimer } from '@/types/types';
 import { RefObject, useEffect, useState } from 'react';
+import { TIMER_MAX_VALUES } from '../../../app/constants/constants';
 import {
   convertMilliseconds,
   convertToMilliseconds,
@@ -19,12 +20,6 @@ const InputsViarants = [
   { label: ETimerUnits.SECONDS, value: 0 },
 ];
 
-const MAX_VALUES = {
-  [ETimerUnits.HOURS]: 24,
-  [ETimerUnits.MINUTES]: 59,
-  [ETimerUnits.SECONDS]: 59,
-};
-
 interface IEditTimerProps {
   isEditingMode: boolean;
   setIsEditingMode: (value: boolean) => void;
@@ -32,11 +27,6 @@ interface IEditTimerProps {
   currentEditingUnit?: ETimerUnits;
   setCurrentEditingUnit: (unit: ETimerUnits) => void;
 }
-
-type TErrorTimer = {
-  error: boolean;
-  label: ETimerUnits | null;
-};
 
 export const EditTimer = ({
   isEditingMode,
@@ -89,13 +79,15 @@ export const EditTimer = ({
 
     const numericValue = Number(truncatedValue);
 
-    if (numericValue > MAX_VALUES[label]) {
+    if (numericValue > TIMER_MAX_VALUES[label]) {
       handleSetError(label);
 
       setTimeout(() => {
         setEditTime((prevState) =>
           prevState.map((item) =>
-            item.label === label ? { ...item, value: MAX_VALUES[label] } : item
+            item.label === label
+              ? { ...item, value: TIMER_MAX_VALUES[label] }
+              : item
           )
         );
       }, 2500);

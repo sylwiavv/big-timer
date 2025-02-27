@@ -2,6 +2,7 @@ import { useSearchParams } from 'next/navigation';
 import useCountdown from '../../../hooks/useCountDown';
 import useUpdateSearchParams from '../../../hooks/useUpdateSearchParams';
 import { ERunning, useTimerStore } from '../../../store/TimerStore';
+import { ETimerUnits } from '../../../types/types';
 import { ButtonsLayout } from '../../molecules/ButtonsLayout/ButtonsLayout';
 import { Button } from '../../ui/button';
 
@@ -13,12 +14,12 @@ const ButtonsToHandleTimer = () => {
   const { milliseconds, running } = useTimerStore();
   const { start, pause, restart } = useCountdown();
 
-  const handleSetStart = () => {
+  const handleSetStartMode = () => {
     const target = Date.now() + milliseconds;
 
-    const hours = Number(params.get('hours')) || 0;
-    const minutes = Number(params.get('minutes')) || 0;
-    const seconds = Number(params.get('seconds')) || 0;
+    const hours = Number(params.get(ETimerUnits.HOURS)) || 0;
+    const minutes = Number(params.get(ETimerUnits.MINUTES)) || 0;
+    const seconds = Number(params.get(ETimerUnits.SECONDS)) || 0;
 
     updateSearchParams({ hours, minutes, seconds, target });
 
@@ -29,7 +30,7 @@ const ButtonsToHandleTimer = () => {
     restart();
   };
 
-  const handleSetPause = () => {
+  const handleSetPauseMode = () => {
     pause();
   };
 
@@ -37,7 +38,7 @@ const ButtonsToHandleTimer = () => {
     <ButtonsLayout>
       {running === ERunning.PAUSED || running === ERunning.IDLE ? (
         <>
-          <Button className="font-semibold" onClick={handleSetStart}>
+          <Button className="font-semibold" onClick={handleSetStartMode}>
             Start
           </Button>
 
@@ -46,7 +47,7 @@ const ButtonsToHandleTimer = () => {
           </Button>
         </>
       ) : (
-        <Button className="font-semibold" onClick={handleSetPause}>
+        <Button className="font-semibold" onClick={handleSetPauseMode}>
           Pause
         </Button>
       )}

@@ -8,7 +8,7 @@ interface ITimerUnitProps {
   unit: ETimerUnits;
 }
 
-export default function TimerUnit({ time, unit }: ITimerUnitProps) {
+const TimerUnit = ({ time, unit }: ITimerUnitProps) => {
   const { formatTime } = useFormattedTime();
 
   return (
@@ -31,4 +31,5 @@ export default function TimerUnit({ time, unit }: ITimerUnitProps) {
       {unit !== ETimerUnits.SECONDS && <span>:</span>}
     </div>
   );
-}
+};
+export default TimerUnit;
