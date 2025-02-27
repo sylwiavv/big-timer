@@ -28,24 +28,21 @@ const Home = () => {
       setMilliseconds(totalMilliseconds);
 
       if (target) {
-        if (!target) return;
-
         const targetTime = parseInt(target.toString(), 10);
         const remainingTime = targetTime - Date.now();
 
-        if (remainingTime) {
+        if (remainingTime > 0) {
           setMilliseconds(remainingTime);
 
           start();
         }
       }
-      //TODO: change a logic
-    } else {
+    } else if (!secondsFromLocalStorage) {
       setMilliseconds(SIX_HOURS_IN_MILLISECONDS);
 
       updateSearchParams({ hours: 6 });
     }
-  }, []);
+  }, [updateSearchParams, getValuesFromSearchParams, setMilliseconds, start]);
 
   return (
     <main className="flex items-center justify-center h-screen">

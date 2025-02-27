@@ -1,4 +1,5 @@
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 import { ESearchParams, ETimerUnits } from '../types/types';
 
 interface ISearchParamsProps {
@@ -11,36 +12,36 @@ interface ISearchParamsProps {
 const useUpdateSearchParams = () => {
   const router = useRouter();
   const pathname = usePathname();
-
   const searchParams = useSearchParams();
-  const params = new URLSearchParams(searchParams.toString());
 
-  const updateSearchParams = ({
-    hours,
-    minutes,
-    seconds,
-    target,
-  }: ISearchParamsProps) => {
-    hours > 0
-      ? params.set(ETimerUnits.HOURS, hours.toString())
-      : params.delete(ETimerUnits.HOURS);
+  const updateSearchParams = useCallback(
+    ({ hours, minutes, seconds, target }: ISearchParamsProps) => {
+      const params = new URLSearchParams(searchParams.toString());
 
-    minutes && minutes > 0
-      ? params.set(ETimerUnits.MINUTES, minutes.toString())
-      : params.delete(ETimerUnits.MINUTES);
+      hours > 0
+        ? params.set(ETimerUnits.HOURS, hours.toString())
+        : params.delete(ETimerUnits.HOURS);
 
-    seconds && seconds > 0
-      ? params.set(ETimerUnits.SECONDS, seconds.toString())
-      : params.delete(ETimerUnits.SECONDS);
+      minutes && minutes > 0
+        ? params.set(ETimerUnits.MINUTES, minutes.toString())
+        : params.delete(ETimerUnits.MINUTES);
 
-    target
-      ? params.set(ESearchParams.TARGET, target.toString())
-      : params.delete(ESearchParams.TARGET);
+      seconds && seconds > 0
+        ? params.set(ETimerUnits.SECONDS, seconds.toString())
+        : params.delete(ETimerUnits.SECONDS);
 
-    router.push(`${pathname}?${params.toString()}`);
-  };
+      target
+        ? params.set(ESearchParams.TARGET, target.toString())
+        : params.delete(ESearchParams.TARGET);
 
-  const getValuesFromSearchParams = () => {
+      router.push(`${pathname}?${params.toString()}`);
+    },
+    [router, pathname, searchParams]
+  );
+
+  const getValuesFromSearchParams = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+
     if (params.size === 0) return null;
 
     return {
@@ -51,8 +52,9 @@ const useUpdateSearchParams = () => {
         ? Number(params.get(ESearchParams.TARGET))
         : undefined,
     };
-  };
+  }, [searchParams]);
 
   return { updateSearchParams, getValuesFromSearchParams };
 };
+
 export default useUpdateSearchParams;
