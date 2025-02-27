@@ -42,7 +42,7 @@ const Home = () => {
 
       updateSearchParams({ hours: 6 });
     }
-  }, [updateSearchParams, getValuesFromSearchParams, setMilliseconds, start]);
+  }, [updateSearchParams, getValuesFromSearchParams]);
 
   return (
     <main className="flex items-center justify-center h-screen">
