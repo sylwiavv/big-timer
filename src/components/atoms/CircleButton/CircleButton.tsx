@@ -1,26 +1,23 @@
 'use client';
 
-import { Button } from '../../ui/button';
+import { memo } from 'react';
+import { Button, ButtonProps } from '../../ui/button';
 
-interface ICircleButtonWithIconProps {
+interface ICircleButtonWithIconProps extends ButtonProps {
   icon: React.ReactNode;
-  onClick: () => void;
 }
 
-const CircleButtonWithIcon: React.FC<ICircleButtonWithIconProps> = ({
-  icon,
-  onClick,
-  ...props
-}) => {
-  return (
-    <Button
-      className="rounded-full p-4 h-4 w-4 font-semibold"
-      onClick={onClick}
-      {...props}
-    >
-      {icon}
-    </Button>
-  );
-};
+const CircleButtonWithIcon = memo(
+  ({ icon, className, ...props }: ICircleButtonWithIconProps) => {
+    return (
+      <Button
+        className={`rounded-full p-4 h-10 w-10 font-semibold flex items-center justify-center ${className}`}
+        {...props}
+      >
+        {icon}
+      </Button>
+    );
+  }
+);
 
 export default CircleButtonWithIcon;

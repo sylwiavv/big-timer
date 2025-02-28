@@ -9,6 +9,9 @@ export default {
   ],
   theme: {
     extend: {
+      fontSize: {
+        timerXl: '10rem',
+      },
       fontFamily: {
         sans: [
           'ui-sans-serif',
@@ -18,6 +21,7 @@ export default {
           'Segoe UI Emoji',
           'Segoe UI Symbol',
           'Noto Color Emoji',
+          'Moneserrat',
         ],
       },
       colors: {

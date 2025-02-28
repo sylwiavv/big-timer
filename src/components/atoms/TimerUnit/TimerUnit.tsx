@@ -8,21 +8,28 @@ interface ITimerUnitProps {
   unit: ETimerUnits;
 }
 
-export default function TimerUnit({ time, unit }: ITimerUnitProps) {
+const TimerUnit = ({ time, unit }: ITimerUnitProps) => {
   const { formatTime } = useFormattedTime();
 
   return (
-    <div className="flex font-extrabold text-[16rem] justify-center items-center">
-      <div className="flex flex-col items-center justify-center">
-        <p className="leading-[.76]">
+    <div
+      className={`flex font-bold text-timerXl justify-center items-center ${unit === ETimerUnits.HOURS ? 'text-center' : 'text-right'}`}
+    >
+      <div className="flex flex-col">
+        <p className="leading-[.80]" data-unit={unit}>
           {unit === ETimerUnits.SECONDS || unit === ETimerUnits.MINUTES
             ? formatTime(time)
             : time}
-        </p>{' '}
-        <span className="text-lg font-light">{unit}</span>
+        </p>
+        <span
+          className={`text-lg font-light ${unit === ETimerUnits.HOURS ? 'pr-0' : 'pr-8'}`}
+        >
+          {unit}
+        </span>
       </div>
 
       {unit !== ETimerUnits.SECONDS && <span>:</span>}
     </div>
   );
-}
+};
+export default TimerUnit;

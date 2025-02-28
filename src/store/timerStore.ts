@@ -1,3 +1,4 @@
+import { ETimerUnits } from '@/types/types';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { immer } from 'zustand/middleware/immer';
@@ -8,41 +9,35 @@ export enum ERunning {
   PAUSED = 'paused',
 }
 
+export type TTimeInitialValues = {
+  [ETimerUnits.HOURS]: 0;
+  [ETimerUnits.MINUTES]: 0;
+  [ETimerUnits.SECONDS]: 0;
+};
+
 interface ITimerState {
-  // hours: number;
-  // minutes: number;
-  seconds: number;
+  milliseconds: number;
   running: ERunning;
-  setTime: (value: number) => void;
-  toggleRunning: (running: ERunning) => void;
-  reset: () => void;
+
+  setMilliseconds: (value: number | ((prev: number) => number)) => void;
+  setRunning: (running: ERunning) => void;
 }
 
 export const useTimerStore = create<ITimerState>()(
   persist(
     immer((set) => ({
-      hours: 0,
-      minutes: 0,
-      seconds: 0,
+      milliseconds: 0,
       running: ERunning.IDLE,
-      setTime: (value) =>
-        set((state) => {
-          let { seconds } = state;
-          seconds += value;
-          return { seconds };
-        }),
 
-      toggleRunning: (running) =>
+      setMilliseconds: (value: number | ((prev: number) => number)) =>
+        set((state) => ({
+          milliseconds:
+            typeof value === 'function' ? value(state.milliseconds) : value,
+        })),
+
+      setRunning: (running) =>
         set((state) => {
           state.running = running;
-        }),
-
-      reset: () =>
-        set((state) => {
-          // state.hours = 0;
-          // state.minutes = 0;
-          state.seconds = 0;
-          state.running = ERunning.IDLE;
         }),
     })),
     {
